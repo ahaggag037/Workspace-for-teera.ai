@@ -41,6 +41,7 @@ python -m taec_lab.cli worklog-record --verb edit --area code --phase implement 
 python -m taec_lab.cli worklog-eval                                 # pre-registered gates
 python -m taec_lab.cli ops-learn                                    # absorb ledger into brain-ops/
 python -m taec_lab.cli ops-forecast                                 # next real work event (advisory)
+MIND_API_PORT=8000 python3 -m taec_lab.mind_api                     # read-only live Mind dashboard/API
 ```
 
 التقرير الفعلي يكتب إلى:

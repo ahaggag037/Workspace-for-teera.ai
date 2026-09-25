@@ -46,5 +46,12 @@
   operator profile: failure incidence 2/7, fail->fix latency 1.3 events,
   0 protocol violations; full dialogue + ranked needs in reports/self-audit.md;
   next gate proposed: pre-registered operator self-eval loop
+- internal_tools (2026-09-25): operator-level orchestration recorded —
+  web_search research pass (RESEARCH_SOURCES.md updated with 8 sources;
+  worklog construct identified as process-mining DFG), image-model call
+  (assets/fawri-logo-concept.png), and a persistent read-only Mind API
+  (taec_lab/mind_api.py on 0.0.0.0:8000; /status /forecast /lessons /ledger).
+  External model APIs remain unavailable (no credentials; none may be
+  requested); lab protocols stay network-free (AGENTS.md rule 5 intact)
 - open_real: `accumulate live rows (ops-learn after bursts); re-run worklog-eval when n_test >= 25; add wall-clock timestamps; then decide whether phase_markov replaces markov as the ops-forecast operator; ops-forecast is advisory, never an instruction.`
 - claim_scope: `synthetic protocol + sealed synthetic held-out + PILOT-scale real-trace PASS; no model-weight or consciousness claim`
