@@ -3,3 +3,6 @@ __pycache__/
 *.egg-info/
 .pytest_cache/
 .venv/
+server/*.log
+server/heartbeat.log
+terra-astra-lab/telemetry/mind-api.db

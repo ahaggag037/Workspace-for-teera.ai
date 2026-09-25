@@ -1,35 +1,47 @@
-"""Mind API: a small stdlib HTTP surface over the TAEC Mind (READ-ONLY).
+"""Mind API v2: stdlib HTTP surface over the TAEC Mind (read-only over banks).
 
-Endpoints:
-  /         -> HTML dashboard (browser-friendly, RTL Arabic)
-  /status   -> JSON: synthetic mind status + ops brain status
-  /forecast -> JSON: live next-real-work-event forecast (advisory)
-  /lessons  -> JSON: knowledge bank listing
-  /ledger   -> JSON: last N real work events
+v2 additions (server-capability upgrade, 2026-09-25):
+  /health  -> liveness: uptime, pid, python, psutil mem/cpu (when available)
+  /metrics -> persisted request counters per endpoint (SQLite at
+              telemetry/mind-api.db), avg latency, uptime
+  SQLite   -> every GET is recorded; the DB survives API restarts, so the
+              counters are cumulative across restarts within the sandbox.
 
-Run:  MIND_API_PORT=8000 python3 -m taec_lab.mind_api   (binds 0.0.0.0)
-
-Honesty: this service only READS the banks and the ledger. It never writes
-banks, never mutates state, and its forecasts are advisory reads of the
-operational brain (BOOT rule: forecasts are never instructions).
+Unchanged: / (RTL dashboard), /status, /forecast, /lessons, /ledger.
+Honesty: the API never writes mind banks or ledger state; its only writes
+are its OWN metrics database. Forecasts remain advisory reads.
 """
 
 from __future__ import annotations
 
 import json
 import os
+import sqlite3
+import time
 from collections import Counter
+from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from .knowledge import KnowledgeBank
-from .mind import TAECMind, default_brain_dir
+from .mind import TAECMind
 from .realtrace import (
     DEFAULT_LEDGER,
     OPS_BRAIN_PATH,
     OpsPhaseBrain,
     forecast_next_ops,
     load_ledger,
-    op_type,
+)
+
+try:  # optional capability (installed by server/boot.sh install)
+    import psutil
+except Exception:  # pragma: no cover - fine without it
+    psutil = None
+
+STARTED_AT = time.time()
+DB_PATH = os.environ.get(
+    "MIND_API_DB",
+    str(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                     "telemetry", "mind-api.db")),
 )
 
 PAGE = """<!doctype html>
@@ -47,12 +59,11 @@ PAGE = """<!doctype html>
  table {{ width:100%; border-collapse:collapse; font-size:.85rem; }}
  td {{ padding:.22rem .3rem; border-bottom:1px solid #1f444c; }}
  .bar {{ background:#1f444c; border-radius:4px; height:10px; position:relative; overflow:hidden; }}
- .bar span {{ position:absolute; inset:0 0 0 0; width:{top_pct}%; background:#e0b25c; }}
  .muted {{ color:#9db4b8; }}
  code {{ color:#e0b25c; }}
 </style></head><body>
-<h1>🧠 TAEC Mind — لوحة حية</h1>
-<div class="sub">عقل خارجي فوق مساحة العمل — قراءة فقط • تحديث كل 30 ثانية • {generated_at}</div>
+<h1>🧠 TAEC Mind — لوحة حية (v2)</h1>
+<div class="sub">عقل خارجي فوق مساحة العمل — قراءة فقط • تحديث كل 30 ثانية • {generated_at} • uptime {uptime_min} د</div>
 <div class="grid">
   <div class="card"><h2>الحالة (الاصطناعي)</h2>
     <div class="big">{mind_status}</div>
@@ -74,8 +85,15 @@ PAGE = """<!doctype html>
   <div class="card"><h2>سجل الشغل الحقيقي</h2>
     <div class="big">{ledger_n} <span class="muted" style="font-size:.9rem">حدث</span></div>
     <table>{ledger_rows}</table></div>
+  <div class="card"><h2>حياة السيرفر (v2)</h2>
+    <div class="big">{requests_total} <span class="muted" style="font-size:.9rem">طلب مخدوم</span></div>
+    <table>
+      <tr><td>الذاكرة المستخدمة</td><td><b>{mem_percent}%</b></td></tr>
+      <tr><td>CPU الآن</td><td><b>{cpu_percent}%</b></td></tr>
+      <tr><td>avg latency</td><td>{avg_ms} ms</td></tr>
+    </table></div>
 </div>
-<div class="sub" style="margin-top:1.5rem">JSON: <code>/status</code> · <code>/forecast</code> · <code>/lessons</code> · <code>/ledger</code> — ملاحظة صدق: التنبؤات قراءات احتمالية للدماغ التشغيلية وليست تعليمات.</div>
+<div class="sub" style="margin-top:1.5rem">JSON: <code>/status</code> · <code>/forecast</code> · <code>/lessons</code> · <code>/ledger</code> · <code>/health</code> · <code>/metrics</code> — التنبؤات قراءات استشارية وليست تعليمات.</div>
 </body></html>"""
 
 
@@ -83,51 +101,95 @@ def _json_bytes(payload) -> bytes:
     return json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8")
 
 
+def _db() -> sqlite3.Connection:
+    connection = sqlite3.connect(DB_PATH)
+    connection.execute(
+        "CREATE TABLE IF NOT EXISTS requests ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, ts REAL, endpoint TEXT, status INTEGER, dur_ms REAL)"
+    )
+    return connection
+
+
+def _record(endpoint: str, status: int, dur_ms: float) -> None:
+    try:
+        connection = _db()
+        connection.execute(
+            "INSERT INTO requests (ts, endpoint, status, dur_ms) VALUES (?, ?, ?, ?)",
+            (time.time(), endpoint, status, round(dur_ms, 3)),
+        )
+        connection.commit()
+        connection.close()
+    except Exception:
+        pass  # metrics must never break serving
+
+
+def _metrics() -> dict:
+    connection = _db()
+    total = connection.execute("SELECT COUNT(*), COALESCE(AVG(dur_ms),0) FROM requests").fetchone()
+    per_endpoint = connection.execute(
+        "SELECT endpoint, COUNT(*) FROM requests GROUP BY endpoint ORDER BY COUNT(*) DESC"
+    ).fetchall()
+    connection.close()
+    return {
+        "requests_total": total[0],
+        "avg_latency_ms": round(total[1], 3),
+        "per_endpoint": {name: count for name, count in per_endpoint},
+        "uptime_seconds": round(time.time() - STARTED_AT, 1),
+        "db": DB_PATH,
+    }
+
+
+def _health() -> dict:
+    payload = {
+        "status": "ok",
+        "version": 2,
+        "uptime_seconds": round(time.time() - STARTED_AT, 1),
+        "pid": os.getpid(),
+        "python": os.sys.version.split()[0],
+    }
+    if psutil is not None:
+        payload["mem_percent"] = psutil.virtual_memory().percent
+        payload["cpu_percent"] = psutil.cpu_percent(interval=None)
+    return payload
+
+
 def _collect() -> dict:
     mind = TAECMind()
-    bank = mind.bank
     ops = OpsPhaseBrain.load(OPS_BRAIN_PATH)
     forecast = forecast_next_ops()
     try:
         ledger = load_ledger(DEFAULT_LEDGER)
     except FileNotFoundError:
         ledger = []
-    verbs = Counter(row.get("verb", "?") for row in ledger[-12:])
-    return {
-        "mind": mind,
-        "bank": bank,
-        "ops": ops,
-        "forecast": forecast,
-        "ledger": ledger,
-        "verbs": verbs,
-    }
+    return {"mind": mind, "ops": ops, "forecast": forecast, "ledger": ledger}
 
 
 def _dashboard(data: dict) -> bytes:
-    from datetime import datetime, timezone
-
     forecast = data["forecast"]
     candidates = forecast.get("candidates", [])[:5]
     top = max((c["probability"] for c in candidates), default=0.0) or 1.0
+    width = int((candidates[0]["probability"] / top) * 100) if candidates else 0
     forecast_rows = "".join(
         f"<tr><td>{c['op']}</td>"
-        f"<td style='width:45%'><div class='bar'><span></span></div></td>"
+        f"<td style='width:45%'><div class='bar'><span style='width:{width}%'></span></div></td>"
         f"<td>{c['probability']:.3f}</td></tr>"
         for c in candidates
-    ).replace("<span></span>", "<span></span>")  # width set below
-    # set bar width via top probability ratio
-    width = int((candidates[0]["probability"] / top) * 100) if candidates else 0
-    forecast_rows = forecast_rows.replace("<div class='bar'><span></span></div>",
-                                          f"<div class='bar'><span style='width:{width}%'></span></div>")
+    )
     ledger_rows = "".join(
         f"<tr><td>#{row['seq']}</td><td><code>{row.get('verb')}</code></td>"
         f"<td class='muted'>{row.get('area')}</td><td>{row.get('phase')}</td></tr>"
         for row in reversed(data["ledger"][-8:])
     )
+    metrics = _metrics()
+    if psutil is not None:
+        mem_percent, cpu_percent = psutil.virtual_memory().percent, psutil.cpu_percent(interval=None)
+    else:
+        mem_percent, cpu_percent = "-", "-"
     html = PAGE.format(
         generated_at=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
+        uptime_min=int(metrics["uptime_seconds"] // 60),
         mind_status=data["mind"].status,
-        lessons=len(data["bank"]),
+        lessons=len(data["mind"].bank),
         weights_updates=data["mind"].weights.meta.get("updates", 0),
         train_traces=data["mind"].weights.meta.get("train_traces", 0),
         ops_transitions=data["ops"].n_transitions,
@@ -139,7 +201,10 @@ def _dashboard(data: dict) -> bytes:
         last_phase=forecast.get("base", {}).get("phase", "?"),
         ledger_n=len(data["ledger"]),
         ledger_rows=ledger_rows,
-        top_pct=100,
+        requests_total=metrics["requests_total"],
+        avg_ms=metrics["avg_latency_ms"],
+        mem_percent=mem_percent,
+        cpu_percent=cpu_percent,
     )
     return html.encode("utf-8")
 
@@ -153,33 +218,39 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self) -> None:  # noqa: N802 (http.server API)
+        started = time.perf_counter()
         path = self.path.split("?")[0]
+        status = 200
         try:
-            data = _collect()
+            try:
+                data = _collect()
+            except FileNotFoundError:
+                data = {"mind": TAECMind(), "ops": OpsPhaseBrain.load(OPS_BRAIN_PATH),
+                        "forecast": {"candidates": [], "base": {}}, "ledger": []}
             if path == "/":
                 self._send(_dashboard(data), "text/html; charset=utf-8")
+            elif path == "/health":
+                self._send(_json_bytes(_health()), "application/json; charset=utf-8")
+            elif path == "/metrics":
+                self._send(_json_bytes(_metrics()), "application/json; charset=utf-8")
             elif path == "/status":
-                mind = data["mind"]
-                ops = data["ops"]
+                mind, ops = data["mind"], data["ops"]
                 self._send(_json_bytes({
                     "synthetic_mind": {
-                        "status": mind.status,
-                        "lessons": len(mind.bank),
+                        "status": mind.status, "lessons": len(mind.bank),
                         "weights_updates": mind.weights.meta.get("updates", 0),
                         "train_traces": mind.weights.meta.get("train_traces", 0),
                     },
                     "ops_brain": {
-                        "path": str(OPS_BRAIN_PATH),
-                        "n_transitions": ops.n_transitions,
-                        "pair_keys": len(ops.pair_counts),
-                        "meta": ops.meta,
+                        "path": str(OPS_BRAIN_PATH), "n_transitions": ops.n_transitions,
+                        "pair_keys": len(ops.pair_counts), "meta": ops.meta,
                     },
                     "ledger": {"path": str(DEFAULT_LEDGER), "n_events": len(data["ledger"])},
                 }), "application/json; charset=utf-8")
             elif path == "/forecast":
                 self._send(_json_bytes(data["forecast"]), "application/json; charset=utf-8")
             elif path == "/lessons":
-                items = sorted(data["bank"].items.values(), key=lambda i: i.item_id)
+                items = sorted(data["mind"].bank.items.values(), key=lambda i: i.item_id)
                 self._send(_json_bytes([
                     {"item_id": i.item_id, "title": i.title, "source": i.source,
                      "confidence": i.confidence, "use_count": i.use_count,
@@ -194,9 +265,13 @@ class Handler(BaseHTTPRequestHandler):
                     for row in reversed(rows)
                 ]), "application/json; charset=utf-8")
             else:
+                status = 404
                 self.send_error(404)
-        except Exception as error:  # surface errors as JSON, keep server alive
+        except Exception as error:  # surface errors as JSON, keep serving
+            status = 500
             self._send(_json_bytes({"error": repr(error)}), "application/json; charset=utf-8")
+        finally:
+            _record(path, status, (time.perf_counter() - started) * 1000)
 
     def log_message(self, *args) -> None:  # quiet
         return
@@ -205,7 +280,7 @@ class Handler(BaseHTTPRequestHandler):
 def main() -> None:
     port = int(os.environ.get("MIND_API_PORT", "8000"))
     server = ThreadingHTTPServer(("0.0.0.0", port), Handler)
-    print(f"TAEC Mind API listening on 0.0.0.0:{port} (read-only)", flush=True)
+    print(f"TAEC Mind API v2 listening on 0.0.0.0:{port} (read-only; metrics={DB_PATH})", flush=True)
     server.serve_forever()
 
 

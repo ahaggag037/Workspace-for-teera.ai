@@ -10,47 +10,48 @@
     "resolve"
   ],
   "marginal": {
-    "create": 25,
+    "create": 29,
     "escalate": 6,
     "fail": 2,
-    "observe": 12,
-    "recover": 3,
-    "resolve": 11
+    "observe": 13,
+    "recover": 4,
+    "resolve": 14
   },
   "meta": {
-    "last_rows_seen": 60,
-    "last_seq_learned": 60,
-    "updates": 1
+    "last_rows_seen": 0,
+    "last_seq_learned": 70,
+    "updates": 3
   },
-  "n_transitions": 59,
+  "n_transitions": 68,
   "pair_counts": {
     "boot|observe": {
       "observe": 1
     },
     "document|create": {
       "create": 5,
-      "resolve": 2
+      "resolve": 3
     },
     "implement|create": {
-      "create": 7,
+      "create": 8,
       "escalate": 1,
       "fail": 2,
       "recover": 1,
-      "resolve": 2
+      "resolve": 3
     },
     "implement|observe": {
       "recover": 1
     },
     "implement|recover": {
-      "create": 1,
+      "create": 2,
       "resolve": 2
     },
     "persist|create": {
       "create": 2,
-      "resolve": 1
+      "resolve": 2
     },
     "persist|resolve": {
       "create": 2,
+      "observe": 1,
       "resolve": 3
     },
     "seal|create": {
@@ -61,7 +62,8 @@
       "escalate": 1
     },
     "study|observe": {
-      "create": 1,
+      "create": 2,
+      "recover": 1,
       "resolve": 1
     },
     "tune|create": {
@@ -85,19 +87,19 @@
       "escalate": 1
     },
     "verify|resolve": {
-      "create": 1,
+      "create": 2,
       "escalate": 2,
       "observe": 2
     }
   },
   "type_counts": {
     "create": {
-      "create": 14,
+      "create": 15,
       "escalate": 2,
       "fail": 2,
       "observe": 1,
       "recover": 1,
-      "resolve": 5
+      "resolve": 8
     },
     "escalate": {
       "create": 4,
@@ -109,20 +111,20 @@
       "recover": 1
     },
     "observe": {
-      "create": 3,
+      "create": 4,
       "escalate": 1,
       "observe": 7,
-      "recover": 1,
+      "recover": 2,
       "resolve": 1
     },
     "recover": {
-      "create": 1,
+      "create": 2,
       "resolve": 2
     },
     "resolve": {
-      "create": 3,
+      "create": 4,
       "escalate": 2,
-      "observe": 2,
+      "observe": 3,
       "resolve": 3
     }
   },

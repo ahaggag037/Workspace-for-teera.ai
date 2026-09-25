@@ -53,5 +53,14 @@
   (taec_lab/mind_api.py on 0.0.0.0:8000; /status /forecast /lessons /ledger).
   External model APIs remain unavailable (no credentials; none may be
   requested); lab protocols stay network-free (AGENTS.md rule 5 intact)
+- server_layer (phase 9, 2026-09-25): `LIVE` — sudo=root, pypi+github
+  reachable from sandbox (earlier no-network assumption BROKEN by test),
+  ubuntu-archive blocked; built server/: boot.sh (api|watchdog|scheduler|
+  install|status|doctor), Mind API v2 (/health,/metrics, SQLite metrics at
+  telemetry/mind-api.db surviving restarts, psutil vitals), watchdog
+  (rescued a killed API: new pid, log evidence), scheduler (idempotent
+  ops-learn tick; first tick absorbed 10 new events, 59->68 transitions).
+  Gates C1-C5 all PASS pre-registered. Limits: host/proxy untouchable,
+  packages session-scoped (declarative reinstall), no inbound internet.
 - open_real: `accumulate live rows (ops-learn after bursts); re-run worklog-eval when n_test >= 25; add wall-clock timestamps; then decide whether phase_markov replaces markov as the ops-forecast operator; ops-forecast is advisory, never an instruction.`
 - claim_scope: `synthetic protocol + sealed synthetic held-out + PILOT-scale real-trace PASS; no model-weight or consciousness claim`
