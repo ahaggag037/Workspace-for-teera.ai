@@ -10,33 +10,35 @@
     "resolve"
   ],
   "marginal": {
-    "create": 31,
+    "create": 36,
     "escalate": 6,
-    "fail": 3,
+    "fail": 4,
     "observe": 13,
     "recover": 4,
-    "resolve": 16
+    "resolve": 20,
+    "unknown": 1
   },
   "meta": {
-    "last_rows_seen": 0,
-    "last_seq_learned": 76,
-    "updates": 6
+    "last_rows_seen": 12,
+    "last_seq_learned": 88,
+    "updates": 7
   },
-  "n_transitions": 73,
+  "n_transitions": 84,
   "pair_counts": {
     "boot|observe": {
       "observe": 1
     },
     "document|create": {
-      "create": 5,
+      "create": 6,
       "resolve": 4
     },
     "implement|create": {
-      "create": 8,
+      "create": 9,
       "escalate": 1,
       "fail": 3,
       "recover": 1,
-      "resolve": 3
+      "resolve": 4,
+      "unknown": 1
     },
     "implement|observe": {
       "recover": 1
@@ -47,10 +49,10 @@
     },
     "persist|create": {
       "create": 2,
-      "resolve": 2
+      "resolve": 3
     },
     "persist|resolve": {
-      "create": 2,
+      "create": 3,
       "observe": 1,
       "resolve": 3
     },
@@ -62,7 +64,7 @@
       "escalate": 1
     },
     "study|observe": {
-      "create": 3,
+      "create": 4,
       "recover": 1,
       "resolve": 1
     },
@@ -80,6 +82,7 @@
       "create": 1
     },
     "verify|fail": {
+      "create": 1,
       "observe": 1,
       "recover": 1,
       "resolve": 1
@@ -90,17 +93,23 @@
     "verify|resolve": {
       "create": 3,
       "escalate": 2,
-      "observe": 2
+      "fail": 1,
+      "observe": 2,
+      "resolve": 1
+    },
+    "verify|unknown": {
+      "resolve": 1
     }
   },
   "type_counts": {
     "create": {
-      "create": 15,
+      "create": 17,
       "escalate": 2,
       "fail": 3,
       "observe": 1,
       "recover": 1,
-      "resolve": 9
+      "resolve": 11,
+      "unknown": 1
     },
     "escalate": {
       "create": 4,
@@ -108,12 +117,13 @@
       "observe": 1
     },
     "fail": {
+      "create": 1,
       "observe": 1,
       "recover": 1,
       "resolve": 1
     },
     "observe": {
-      "create": 5,
+      "create": 6,
       "escalate": 1,
       "observe": 7,
       "recover": 2,
@@ -124,10 +134,14 @@
       "resolve": 2
     },
     "resolve": {
-      "create": 5,
+      "create": 6,
       "escalate": 2,
+      "fail": 1,
       "observe": 3,
-      "resolve": 3
+      "resolve": 4
+    },
+    "unknown": {
+      "resolve": 1
     }
   },
   "version": "ops-brain-v1"

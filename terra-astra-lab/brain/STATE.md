@@ -72,5 +72,12 @@
   allowlist circumvention — platform contract, not capability gap
   (lesson-phase10-boundaries). pkill guard lesson #2 recorded (compound
   command lines self-match).
+- deep_session (2026-09-25, RESEARCH-OS applied): mind_api -> v3.
+  SQLite WAL+busy_timeout+synchronous (concurrency hardening for
+  ThreadingHTTPServer); graceful SIGTERM/SIGINT (verified: clean close);
+  /health v3 = loadavg + fd-usage from /proc (zero-psutil path complete);
+  /metrics RED complete (errors=5xx). Watchdog+scheduler: fcntl
+  single-instance locks + micro-jitter (double-start verified rejected).
+  Sources graded A/B and recorded in RESEARCH_SOURCES.md.
 - open_real: `accumulate live rows (ops-learn after bursts); re-run worklog-eval when n_test >= 25; add wall-clock timestamps; then decide whether phase_markov replaces markov as the ops-forecast operator; ops-forecast is advisory, never an instruction.`
 - claim_scope: `synthetic protocol + sealed synthetic held-out + PILOT-scale real-trace PASS; no model-weight or consciousness claim`

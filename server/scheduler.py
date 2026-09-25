@@ -18,6 +18,19 @@ import sys
 import time
 
 SERVER_DIR = pathlib.Path(__file__).resolve().parent
+
+def _acquire_single_instance(name: str):
+    """fcntl lock so two copies never run (double watchdog = API spawn wars)."""
+    import fcntl
+    lock_path = pathlib.Path("/tmp") / f"taec-{name}.lock"
+    handle = open(lock_path, "w")
+    try:
+        fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        print(f"[{name}] another instance already holds {lock_path} — exiting", flush=True)
+        raise SystemExit(0)
+    return handle
+
 ROOT = SERVER_DIR.parent
 LAB = ROOT / "terra-astra-lab"
 HEARTBEAT = SERVER_DIR / "heartbeat.log"
@@ -43,6 +56,7 @@ def tick() -> None:
 
 
 def main() -> None:
+    _lock = _acquire_single_instance("scheduler")
     while True:
         try:
             tick()

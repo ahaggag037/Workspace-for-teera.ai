@@ -17,6 +17,19 @@ import time
 import urllib.request
 
 SERVER_DIR = pathlib.Path(__file__).resolve().parent
+
+def _acquire_single_instance(name: str):
+    """fcntl lock so two copies never run (double watchdog = API spawn wars)."""
+    import fcntl
+    lock_path = pathlib.Path("/tmp") / f"taec-{name}.lock"
+    handle = open(lock_path, "w")
+    try:
+        fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        print(f"[{name}] another instance already holds {lock_path} — exiting", flush=True)
+        raise SystemExit(0)
+    return handle
+
 ROOT = SERVER_DIR.parent
 LAB = ROOT / "terra-astra-lab"
 API_LOG = SERVER_DIR / "mind-api.log"
@@ -55,6 +68,7 @@ def restart() -> None:
 
 
 def main() -> None:
+    _lock = _acquire_single_instance("watchdog")
     log(f"watchdog start (url={URL}, check={CHECK_SECONDS}s, restart_after={FAILS_BEFORE_RESTART})")
     failures = 0
     while True:
@@ -66,7 +80,7 @@ def main() -> None:
             if failures >= FAILS_BEFORE_RESTART:
                 restart()
                 failures = 0
-        time.sleep(CHECK_SECONDS)
+        time.sleep(CHECK_SECONDS + (os.getpid() % 3) * 0.1)  # tiny deterministic jitter
 
 
 if __name__ == "__main__":

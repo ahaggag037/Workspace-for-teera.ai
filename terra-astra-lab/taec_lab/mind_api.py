@@ -16,8 +16,10 @@ from __future__ import annotations
 
 import json
 import os
+import signal
 import sqlite3
 import sys
+import threading
 import time
 from collections import Counter
 from datetime import datetime, timezone
@@ -135,7 +137,19 @@ def _json_bytes(payload) -> bytes:
 
 
 def _db() -> sqlite3.Connection:
-    connection = sqlite3.connect(DB_PATH)
+    """Connection with research-backed hardening (2026-09-25 session):
+    WAL lets concurrent readers proceed during writes (ThreadingHTTPServer
+    serves requests from many threads); busy_timeout=5000ms absorbs lock
+    contention (benchmarks show <5s still yields 'database is locked');
+    synchronous=NORMAL is the recommended WAL pairing. Write transactions
+    here are single INSERTs, satisfying the keep-transactions-small rule.
+    Known gotcha (documented, accepted): busy_timeout does not cover
+    read-to-write upgrade transactions; none exist in this schema.
+    """
+    connection = sqlite3.connect(DB_PATH, timeout=5.0)
+    connection.execute("PRAGMA journal_mode=WAL")
+    connection.execute("PRAGMA busy_timeout=5000")
+    connection.execute("PRAGMA synchronous=NORMAL")
     connection.execute(
         "CREATE TABLE IF NOT EXISTS requests ("
         "id INTEGER PRIMARY KEY AUTOINCREMENT, ts REAL, endpoint TEXT, status INTEGER, dur_ms REAL)"
@@ -159,12 +173,14 @@ def _record(endpoint: str, status: int, dur_ms: float) -> None:
 def _metrics() -> dict:
     connection = _db()
     total = connection.execute("SELECT COUNT(*), COALESCE(AVG(dur_ms),0) FROM requests").fetchone()
+    errors = connection.execute("SELECT COUNT(*) FROM requests WHERE status >= 500").fetchone()[0]
     per_endpoint = connection.execute(
         "SELECT endpoint, COUNT(*) FROM requests GROUP BY endpoint ORDER BY COUNT(*) DESC"
     ).fetchall()
     connection.close()
     return {
         "requests_total": total[0],
+        "errors_total": errors,  # RED method: Rate + Errors + Duration complete
         "avg_latency_ms": round(total[1], 3),
         "per_endpoint": {name: count for name, count in per_endpoint},
         "uptime_seconds": round(time.time() - STARTED_AT, 1),
@@ -172,14 +188,39 @@ def _metrics() -> dict:
     }
 
 
+def _proc_loadavg() -> list[float]:
+    try:
+        with open("/proc/loadavg", encoding="utf-8") as handle:
+            parts = handle.read().split()
+        return [float(x) for x in parts[:3]]
+    except Exception:
+        return []
+
+
+def _fd_usage() -> dict:
+    """Open fds vs soft limit (stdlib-only; liveness-cheap)."""
+    try:
+        soft, _hard = __import__("resource").getrlimit(__import__("resource").RLIMIT_NOFILE)
+        used = len(os.listdir("/proc/self/fd"))
+        return {"open": used, "soft_limit": soft, "percent": round(100.0 * used / max(1, soft), 1)}
+    except Exception:
+        return {}
+
+
 def _health() -> dict:
     payload = {
         "status": "ok",
-        "version": 2,
+        "version": 3,
         "uptime_seconds": round(time.time() - STARTED_AT, 1),
         "pid": os.getpid(),
         "python": os.sys.version.split()[0],
     }
+    load = _proc_loadavg()
+    if load:
+        payload["loadavg"] = load  # zero-dependency CPU pressure signal
+    fds = _fd_usage()
+    if fds:
+        payload["fds"] = fds
     if psutil is not None:
         payload["mem_percent"] = psutil.virtual_memory().percent
         payload["cpu_percent"] = psutil.cpu_percent(interval=None)
@@ -341,8 +382,22 @@ class Handler(BaseHTTPRequestHandler):
 def main() -> None:
     port = int(os.environ.get("MIND_API_PORT", "8000"))
     server = ThreadingHTTPServer(("0.0.0.0", port), Handler)
-    print(f"TAEC Mind API v2 listening on 0.0.0.0:{port} (read-only; metrics={DB_PATH})", flush=True)
-    server.serve_forever()
+    server.daemon_threads = True
+
+    def graceful(signum, _frame):
+        # shutdown() must be called from a different thread than
+        # serve_forever() (documented http.server requirement).
+        print(f"graceful shutdown: signal {signum}", flush=True)
+        threading.Thread(target=server.shutdown, daemon=True).start()
+
+    signal.signal(signal.SIGTERM, graceful)
+    signal.signal(signal.SIGINT, graceful)
+    print(f"TAEC Mind API v3 listening on 0.0.0.0:{port} (read-only; WAL metrics={DB_PATH})", flush=True)
+    try:
+        server.serve_forever()
+    finally:
+        server.server_close()
+        print("graceful shutdown: server closed cleanly", flush=True)
 
 
 if __name__ == "__main__":

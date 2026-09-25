@@ -54,3 +54,37 @@ Implementation boundary (unchanged): direct evidence is not imported as
 proof that the lab mechanism matches any biology or that TAEC beats these
 methods — the synthetic protocol results remain engineering/protocol
 evidence only, and the real-trace pilot is directional at pilot scale.
+
+
+## 2026-09-25 — deep self-system session (RESEARCH-OS applied to our own server)
+
+Method: the 10-layer Fawri Research OS (video-translator/meta/RESEARCH-OS.md)
+applied to the TAEC server itself. SKELETON: unknowns U1-U7 about concurrency,
+signals, observability. FANOUT: 3 parallel searches. GRADE + TRIANGULATE below.
+Sources (retrieved 2026-09-25):
+
+1. [A] SQLite concurrency engineering — WAL + busy_timeout>=5000ms +
+   synchronous=NORMAL + small write transactions; gotcha: busy_timeout does
+   not cover read->write upgrades
+   (https://tenthousandmeters.com/blog/sqlite-concurrent-writes-and-database-is-locked-errors/)
+   — triangulated by dbpro.app + ai2sql builder guides (same pragma trio).
+2. [A] Graceful SIGTERM for http.server: shutdown() MUST run from a thread
+   other than serve_forever(); server_close() in finally
+   (https://oneuptime.com/blog/post/2026-01-16-docker-graceful-shutdown-signals/view)
+   — consistent with the classic gevent #1817 discussion.
+3. [B] Health-check orthodoxy: liveness = cheap always-200, no dependency
+   calls; readiness = deep; /metrics for counters
+   (https://codelit.io/blog/health-check-monitoring-patterns) — our /health
+   is liveness-style; enriched it with /proc reads (loadavg, fd usage) that
+   stay cheap and dependency-free; RED method completed with an errors
+   counter (5xx convention).
+
+Adopted into mind_api v3: WAL+busy_timeout+synchronous on the metrics DB;
+graceful SIGTERM/SIGINT (verified live: 'graceful shutdown: signal 15 →
+server closed cleanly'); /health v3 with /proc/loadavg + fd-usage vs
+RLIMIT_NOFILE=1024 (works with zero psutil); /metrics errors_total (5xx).
+Adopted into server supervisors: fcntl single-instance locks (double
+watchdog now exits cleanly — verified) + deterministic micro-jitter.
+
+Honesty: sources are engineering references, not proof of superiority;
+all claims above were re-verified by live probes on our own server.
