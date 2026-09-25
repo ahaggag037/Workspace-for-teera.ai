@@ -122,6 +122,10 @@ def main() -> int:
     recall.add_argument("query")
     recall.add_argument("--top-k", type=int, default=3)
     recall.add_argument("--brain-dir", default=str(default_brain_dir()))
+    recall2 = subparsers.add_parser("recall2", help="FTS5 recall vault (lessons + lived events)")
+    recall2.add_argument("query")
+    recall2.add_argument("--top-k", type=int, default=5, dest="top_k")
+    recall2.add_argument("--brain-dir", default=str(default_brain_dir()))
 
     args = parser.parse_args()
 
@@ -269,6 +273,15 @@ def main() -> int:
             for h in hits
         ]
         print(json.dumps(payload, indent=2, sort_keys=True))
+        return 0
+    if args.command == "recall2":
+        from .recall_vault import search_ledger, search_lessons
+
+        payload = {
+            "lessons": search_lessons(args.query, k=args.top_k),
+            "lived_events": search_ledger(args.query, k=args.top_k),
+        }
+        print(json.dumps(payload, indent=2, ensure_ascii=False))
         return 0
     return 2
 

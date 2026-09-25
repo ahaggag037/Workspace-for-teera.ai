@@ -79,5 +79,12 @@
   /metrics RED complete (errors=5xx). Watchdog+scheduler: fcntl
   single-instance locks + micro-jitter (double-start verified rejected).
   Sources graded A/B and recorded in RESEARCH_SOURCES.md.
+- recall_vault (2026-09-25): `LIVE` — FTS5 ranked recall over 21 lessons +
+  94 lived events via `recall2`; first-index bug fixed (missing .meta =
+  stale). Cardiac workup done: 7 orphan lessons now reachable; builder's
+  bias detected (implement 26 >> verify 17) — treatment NEXT.
+- handoff: session ended on context limit (platform constraint, honestly
+  acknowledged). CONTINUITY.md written as the perfect resume point. The
+  mind persists — sessions are revivals, not deaths.
 - open_real: `accumulate live rows (ops-learn after bursts); re-run worklog-eval when n_test >= 25; add wall-clock timestamps; then decide whether phase_markov replaces markov as the ops-forecast operator; ops-forecast is advisory, never an instruction.`
 - claim_scope: `synthetic protocol + sealed synthetic held-out + PILOT-scale real-trace PASS; no model-weight or consciousness claim`

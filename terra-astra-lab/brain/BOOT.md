@@ -3,6 +3,7 @@
 You are operating with an external workspace mind. Before any TAEC task:
 
 0. Read `IDENTITY.md` (this folder) — the mind's character layer.
+0.5. Read `CONTINUITY.md` — the handoff letter from the previous instance.
 1. Read this file, then `POLICIES.md`, then `STATE.md`.
 2. Load `WEIGHTS.json` and `KNOWLEDGE.jsonl` as your persistent external memory.
 3. Report mind status: `COLD_START` (banks empty/missing) or `WARM` (banks loaded).
