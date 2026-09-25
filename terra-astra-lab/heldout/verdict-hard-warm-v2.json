@@ -1,0 +1,38 @@
+{
+  "boundaries": {
+    "f1": 0.9387755102040816,
+    "precision": 1.0,
+    "recall": 0.8846153846153846
+  },
+  "cold_uniform": {
+    "accuracy": 0.12179487179487179,
+    "brier": 0.8571428571428574,
+    "ece": 0.021062271062271057,
+    "log_loss": 1.9459101490553137,
+    "n": 156
+  },
+  "delta": {
+    "accuracy": 0.39102564102564097,
+    "brier": 0.22822815342035085,
+    "ece": -0.12731420545276761,
+    "log_loss": 0.6784406383480694
+  },
+  "gates": {
+    "G1_seal_ok": true,
+    "G2_acc_beats_cold": true,
+    "G3_logloss_beats_cold": true,
+    "G4_boundary_f1_ge_050": true
+  },
+  "n_next_tasks": 156,
+  "seal_ok": true,
+  "solver": "mind:WARM",
+  "solver_scores": {
+    "accuracy": 0.5128205128205128,
+    "brier": 0.6289147037225066,
+    "ece": 0.14837647651503869,
+    "log_loss": 1.2674695107072442,
+    "n": 156
+  },
+  "status": "HELDOUT_EVAL",
+  "verdict": "PASS"
+}

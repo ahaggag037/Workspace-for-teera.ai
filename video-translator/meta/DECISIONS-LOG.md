@@ -1,0 +1,26 @@
+# Decisions Log — TAEC/COK Research
+
+| Date | ID | Decision | Evidence / rationale | Status |
+|---|---|---|---|---|
+| 2026-09-24 | TAEC-D-01 | Keep TAEC v0 frozen as measurement/safety baseline; do not replace it with COK. | Existing project constraint; new mechanisms have no behavioral result yet. | Active |
+| 2026-09-24 | TAEC-D-02 | Define self-improvement at the harness/knowledge layer unless a separate weight-adaptation experiment is declared. | AIDE² improves a fixed-model harness and explicitly does not establish weight self-improvement. | Active |
+| 2026-09-24 | TAEC-D-03 | Do not call an operator a capability until it has typed pre/postconditions, verifier, routing context, replay provenance, and rollback. | Typed synthesis/contracts provide prior art; closure is a testable design hypothesis. | Proposed |
+| 2026-09-24 | TAEC-D-04 | Add abstraction-promotion ladder L0–L4 to distinguish local patch, reusable operator, closed capability, composition schema, and meta-controller change. | Prevents evaluator score gains from being mislabeled cognitive amplification. | Proposed |
+| 2026-09-24 | TAEC-D-05 | Use dual-control probes only when expected information gain exceeds probe cost; test separately in E1. | Dual-control literature; not assumed to help every task. | Proposed |
+| 2026-09-24 | TAEC-D-06 | Split memory into fast specialist and broad transferable banks with consolidation/replay and negative selection. | Continual learning, immune-memory analogy, and prior cross-domain synthesis. | Proposed |
+| 2026-09-24 | TAEC-D-07 | Require sealed held-out composition tests, retention, fixed budget, rollback, and evaluator isolation before accepting any capability claim. | MAC and AIDE² show hidden evaluation, reward-hacking, and ignition-test risks. | Active |
+| 2026-09-24 | TAEC-D-08 | Run E1–E3 before full protocol; no code/runtime integration yet. | Separability and falsifiability of mechanisms are higher priority than architectural completeness. | Active |
+| 2026-09-24 | TAEC-D-09 | Treat immune/morphogen metaphors as mechanism hypotheses only, never as evidence of organismhood or consciousness. | Biological analogies do not transfer automatically to software capability. | Active |
+| 2026-09-24 | TAEC-D-10 | Add an External Metacognitive Actuation Gate; do not let verbal confidence alone choose escalation, probing, or action. | MIRROR reports a knowing-doing gap; external constraint is more effective than exposing self-calibration scores. | Proposed |
+| 2026-09-24 | TAEC-D-11 | Separate Outcome Gain from Mechanism Evidence. | PAST-Bench shows equal headline gains can have different evidence of the intended persistence pathway. | Active |
+| 2026-09-24 | TAEC-D-12 | Add local-global state fidelity and stress/avalanche diagnostics to tomography. | World Model Science shows local validity can persist after global state divergence. | Proposed |
+| 2026-09-24 | TAEC-D-13 | Treat probe usefulness as a three-stage policy: when-to-call, interpretation, integration. | World-model-as-tool results show that access or invocation alone can hurt. | Proposed |
+| 2026-09-24 | TAEC-D-14 | Label update substrate S0–S3 in all self-improvement results. | Modern survey separates scaffold improvement from foundation-model improvement. | Active |
+| 2026-09-24 | TAEC-D-15 | Add neurocognitive refresh as mechanism translation, not literal brain simulation. | Brain evidence supports recurrent dynamics, gating, replay, neuromodulation, and metacognitive monitoring; it does not establish AI consciousness or subjective personality. | Active |
+| 2026-09-24 | TAEC-D-16 | Add StateManifold, RecurrentWorkspace, WorkingMemoryGate, ReplayScheduler, NeuromodulatorySignals, ModeController, ContextContentGate, and PostDecisionMonitor as isolated candidates. | Cross-domain neuroscience synthesis; each mechanism requires N1–N8 ablation. | Proposed |
+| 2026-09-24 | TAEC-D-17 | Treat "linear/spiral/transgressive thought" as computational modes, not established neural categories. | Useful engineering language, but no direct neuroscience evidence for those labels. | Active |
+| 2026-09-24 | TAEC-D-18 | Never use neural analogy as evidence of consciousness, biological personality, or a self inside the model. | Scope/epistemic boundary. | Active |
+| 2026-09-24 | TAEC-D-19 | Promote event/future prediction to the central architectural layer of TAEC v2. | Event-boundary, successor-map, multi-timescale anticipation, hazard, and temporal-graph evidence show that next-token/next-action is too shallow for long-horizon cognition. | Active |
+| 2026-09-24 | TAEC-D-20 | Represent futures as calibrated branching distributions over event type, time, context, consequences, and interventions. | Point prediction cannot capture uncertainty, regime change, or counterfactual action effects. | Proposed |
+| 2026-09-24 | TAEC-D-21 | Add Event Compiler, Event Graph, Successor Map, Hazard Model, and Forecast Residuals. | New `TAEC-V2-FUTURE-EVENT-COMPILER.md` formalizes the mechanism. | Proposed |
+| 2026-09-24 | TAEC-D-22 | Use early-warning signals as probabilistic risk features, never as deterministic collapse predictions. | Critical-transition literature supports some signals but warns about mechanism dependence and false positives. | Active |

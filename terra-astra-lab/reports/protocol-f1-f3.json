@@ -1,0 +1,51 @@
+{
+  "artifacts": {
+    "compiler": "EventCompiler.v0",
+    "event_baseline": "EventTransitionPredictor.v0",
+    "hazard": "HazardModel.v0",
+    "raw_baseline": "RawTokenPredictor.v0",
+    "successor": "SuccessorRepresentation.v0"
+  },
+  "claim_scope": "synthetic implementation protocol; no capability claim",
+  "config": {
+    "seed": 20260924,
+    "test_traces": 20,
+    "train_traces": 40
+  },
+  "f1_boundaries": {
+    "f1": 1.0,
+    "precision": 1.0,
+    "recall": 1.0
+  },
+  "f1_f3_forecasting": {
+    "event_transition": {
+      "accuracy": 0.48846153846153845,
+      "brier": 0.6112837179480731,
+      "ece": 0.09578490143366027,
+      "log_loss": 3.793399030839533,
+      "n": 260
+    },
+    "raw_token": {
+      "accuracy": 0.4269230769230769,
+      "brier": 0.652979971493023,
+      "ece": 0.18430162559032526,
+      "log_loss": 3.839455705934267,
+      "n": 260
+    },
+    "successor_representation": {
+      "accuracy": 0.4461538461538462,
+      "brier": 0.7496297748437648,
+      "ece": 0.1581330981592544,
+      "log_loss": 3.083574197713044,
+      "n": 260
+    }
+  },
+  "hazard": {
+    "mean_absolute_time_error": 0.08285867313640907,
+    "n": 260,
+    "time_window_coverage": 0.75,
+    "type_accuracy": 0.4423076923076923
+  },
+  "heldout_status": "NOT_RUN",
+  "status": "PROTOCOL_TEST_ONLY"
+}

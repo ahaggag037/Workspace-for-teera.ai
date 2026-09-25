@@ -1,0 +1,36 @@
+{
+  "claim_scope": "synthetic external-memory transfer; no model-weight claim",
+  "cold_start": {
+    "accuracy": 0.09615384615384616,
+    "brier": 0.8571428571428573,
+    "ece": 0.04670329670329669,
+    "log_loss": 1.9459101490553135,
+    "n": 260
+  },
+  "config": {
+    "seed": 20260924,
+    "test_traces": 20,
+    "train_traces": 40
+  },
+  "delta": {
+    "accuracy": 0.3923076923076923,
+    "brier": 0.25340196187022324,
+    "ece": 0.014026571390347554,
+    "log_loss": 0.3316461277929501
+  },
+  "heldout_status": "NOT_RUN",
+  "status": "PROTOCOL_TEST_ONLY",
+  "training": {
+    "lessons": 14,
+    "status": "WARM",
+    "traces": 40,
+    "weights_updates": 1
+  },
+  "warm_memory": {
+    "accuracy": 0.48846153846153845,
+    "brier": 0.6037408952726341,
+    "ece": 0.032676725312949136,
+    "log_loss": 1.6142640212623633,
+    "n": 260
+  }
+}
