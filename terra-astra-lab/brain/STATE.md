@@ -41,5 +41,10 @@
   calibrated arms by proper scoring; the always-create artifact (uniform,
   acc 0.5500) wins raw accuracy only via train→test distribution shift
   (observe-heavy train, create-heavy test)
+- self_audit (2026-09-25, INTROSPECTION_ONLY): found+fixed live defect
+  (ops-learn idempotency; 108->59 transitions, regression test, 34/34);
+  operator profile: failure incidence 2/7, fail->fix latency 1.3 events,
+  0 protocol violations; full dialogue + ranked needs in reports/self-audit.md;
+  next gate proposed: pre-registered operator self-eval loop
 - open_real: `accumulate live rows (ops-learn after bursts); re-run worklog-eval when n_test >= 25; add wall-clock timestamps; then decide whether phase_markov replaces markov as the ops-forecast operator; ops-forecast is advisory, never an instruction.`
 - claim_scope: `synthetic protocol + sealed synthetic held-out + PILOT-scale real-trace PASS; no model-weight or consciousness claim`

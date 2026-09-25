@@ -107,6 +107,18 @@ class ForecastAndEvalTests(unittest.TestCase):
             for name, probability in expected.items():
                 self.assertAlmostEqual(got[name], round(probability, 6), places=6)
 
+    def test_learn_is_idempotent_per_ledger_prefix(self):
+        # Phase-7 self-audit catch: repeated learn must not double-count.
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            ledger = _fixture_ledger(tmp)
+            brain_path = tmp / "ops-brain.json"
+            first = learn_ops_brain(ledger_path=ledger, brain_path=brain_path)
+            second = learn_ops_brain(ledger_path=ledger, brain_path=brain_path)
+            self.assertEqual(first["n_transitions"], len(FIXTURE_ROWS) - 1)
+            self.assertEqual(second["n_transitions"], first["n_transitions"])
+            self.assertEqual(second["rows_absorbed"], 0)
+
     def test_eval_v2_wellformed_and_smalln_inconclusive(self):
         with tempfile.TemporaryDirectory() as tmp:
             ledger = _fixture_ledger(Path(tmp))

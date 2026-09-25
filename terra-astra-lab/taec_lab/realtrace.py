@@ -206,18 +206,27 @@ def learn_ops_brain(
     ledger_path: str | Path = DEFAULT_LEDGER,
     brain_path: str | Path = OPS_BRAIN_PATH,
 ) -> dict[str, Any]:
-    """Operational learning: absorb the WHOLE live ledger into the persistent
-    ops brain (eval still trains on the train split only — separation of
-    concerns is documented)."""
+    """Operational learning: absorb the live ledger into the persistent ops
+    brain. IDEMPOTENT per ledger prefix: only rows beyond
+    meta["last_seq_learned"] are absorbed, so repeated `ops-learn` runs never
+    double-count history (found by the phase-7 self-audit: a second learn
+    pushed 49 -> 108 transitions from 60 rows; fixed before any forecast
+    relied on it). Eval still trains on the train split only."""
     rows = load_ledger(ledger_path)
     brain = OpsPhaseBrain.load(brain_path)
-    brain.observe_rows(rows)
+    last_seen = int(brain.meta.get("last_seq_learned", 0) or 0)
+    new_rows = [row for row in rows if int(row.get("seq", 0)) > last_seen]
+    brain.observe_rows(new_rows)
+    if rows:
+        brain.meta["last_seq_learned"] = int(rows[-1]["seq"])
     brain.save(brain_path)
     return {
         "status": "OPS_LEARN",
         "brain_path": str(brain_path),
         "n_transitions": brain.n_transitions,
         "rows_seen": len(rows),
+        "rows_absorbed": len(new_rows),
+        "last_seq_learned": brain.meta["last_seq_learned"],
         "updates": brain.meta["updates"],
         "pair_keys": len(brain.pair_counts),
     }

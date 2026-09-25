@@ -10,30 +10,31 @@
     "resolve"
   ],
   "marginal": {
-    "create": 21,
-    "escalate": 5,
-    "fail": 1,
+    "create": 25,
+    "escalate": 6,
+    "fail": 2,
     "observe": 12,
-    "recover": 2,
-    "resolve": 8
+    "recover": 3,
+    "resolve": 11
   },
   "meta": {
-    "last_rows_seen": 50,
+    "last_rows_seen": 60,
+    "last_seq_learned": 60,
     "updates": 1
   },
-  "n_transitions": 49,
+  "n_transitions": 59,
   "pair_counts": {
     "boot|observe": {
       "observe": 1
     },
     "document|create": {
       "create": 5,
-      "resolve": 1
+      "resolve": 2
     },
     "implement|create": {
-      "create": 6,
+      "create": 7,
       "escalate": 1,
-      "fail": 1,
+      "fail": 2,
       "recover": 1,
       "resolve": 2
     },
@@ -42,21 +43,21 @@
     },
     "implement|recover": {
       "create": 1,
-      "resolve": 1
+      "resolve": 2
     },
     "persist|create": {
-      "create": 1,
+      "create": 2,
       "resolve": 1
     },
     "persist|resolve": {
-      "create": 1,
-      "resolve": 2
+      "create": 2,
+      "resolve": 3
     },
     "seal|create": {
       "escalate": 1
     },
     "seal|escalate": {
-      "create": 2,
+      "create": 3,
       "escalate": 1
     },
     "study|observe": {
@@ -77,33 +78,35 @@
       "create": 1
     },
     "verify|fail": {
-      "observe": 1
+      "observe": 1,
+      "recover": 1
     },
     "verify|observe": {
       "escalate": 1
     },
     "verify|resolve": {
       "create": 1,
-      "escalate": 1,
+      "escalate": 2,
       "observe": 2
     }
   },
   "type_counts": {
     "create": {
-      "create": 12,
+      "create": 14,
       "escalate": 2,
-      "fail": 1,
+      "fail": 2,
       "observe": 1,
       "recover": 1,
-      "resolve": 4
+      "resolve": 5
     },
     "escalate": {
-      "create": 3,
+      "create": 4,
       "escalate": 1,
       "observe": 1
     },
     "fail": {
-      "observe": 1
+      "observe": 1,
+      "recover": 1
     },
     "observe": {
       "create": 3,
@@ -114,13 +117,13 @@
     },
     "recover": {
       "create": 1,
-      "resolve": 1
+      "resolve": 2
     },
     "resolve": {
-      "create": 2,
-      "escalate": 1,
+      "create": 3,
+      "escalate": 2,
       "observe": 2,
-      "resolve": 2
+      "resolve": 3
     }
   },
   "version": "ops-brain-v1"

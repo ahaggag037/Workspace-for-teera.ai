@@ -37,6 +37,11 @@
    `ops-learn`/`ops-forecast`) is LIVE and consulted before new work phases;
    v2 pilot PASS on R5/R6 (constant-baseline caveat fixed); phase value over
    plain markov still unproven at n=50 — re-decide at n_test >= 25.
+9. Operator self-eval loop (proposed by the 2026-09-25 self-audit):
+   pre-registered gates for the agent itself — first-pass rate, fail->fix
+   latency, protocol-violation rate, context efficiency — measured per phase;
+   plus ledger write-time validator and tool-failure capture (close the
+   unledgered-mishap blind spot).
 3. Add explicit counterfactual/intervention branches (F4–F5).
 4. Add early-warning regime-shift fixtures (F6).
 5. Add prospective-memory cue/expiry fixtures (F8).
