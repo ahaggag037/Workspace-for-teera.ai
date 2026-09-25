@@ -1,0 +1,102 @@
+{
+  "claim_scope": "inference-time operator ablation on frozen banks; synthetic only",
+  "config": {
+    "brain_dir": "/home/user/Workspace-for-teera.ai/terra-astra-lab/brain",
+    "dev_seed_start": 20500924,
+    "difficulty": "hard",
+    "eval_seed_start": 20510924,
+    "n_dev": 24,
+    "n_eval": 24,
+    "weights_updates": 2
+  },
+  "cost": {
+    "v2_extra_cost": "one fused-evidence pass + one retyped prediction per task",
+    "wall_seconds_total": 1.002
+  },
+  "dev_split": {
+    "hard": {
+      "accuracy": 0.5032051282051282,
+      "boundary": {
+        "f1": 0.9547738693467337,
+        "precision": 1.0,
+        "recall": 0.9134615384615384
+      },
+      "brier": 0.6207334444439888,
+      "ece": 0.14501437097009673,
+      "log_loss": 1.2545401305565396,
+      "n": 312
+    },
+    "softmix": {
+      "accuracy": 0.49038461538461536,
+      "boundary": {
+        "f1": 0.9753694581280787,
+        "precision": 1.0,
+        "recall": 0.9519230769230769
+      },
+      "brier": 0.6290898714534031,
+      "ece": 0.14264228097093215,
+      "log_loss": 1.267209182397202,
+      "n": 312
+    },
+    "v2_fused": {
+      "accuracy": 0.5192307692307693,
+      "boundary": {
+        "f1": 0.9902912621359222,
+        "precision": 1.0,
+        "recall": 0.9807692307692307
+      },
+      "brier": 0.5977125284408609,
+      "ece": 0.15938682935427875,
+      "log_loss": 1.1796767018991507,
+      "n": 312
+    }
+  },
+  "eval_split": {
+    "hard": {
+      "accuracy": 0.46794871794871795,
+      "boundary": {
+        "f1": 0.9494949494949495,
+        "precision": 1.0,
+        "recall": 0.9038461538461539
+      },
+      "brier": 0.628628276743258,
+      "ece": 0.10634849282016615,
+      "log_loss": 1.2577779372223228,
+      "n": 312
+    },
+    "softmix": {
+      "accuracy": 0.4551282051282051,
+      "boundary": {
+        "f1": 0.9634551495016611,
+        "precision": 1.0,
+        "recall": 0.9294871794871795
+      },
+      "brier": 0.6360114357449363,
+      "ece": 0.11260289084023051,
+      "log_loss": 1.279158533795689,
+      "n": 312
+    },
+    "v2_fused": {
+      "accuracy": 0.5032051282051282,
+      "boundary": {
+        "f1": 0.9902912621359222,
+        "precision": 1.0,
+        "recall": 0.9807692307692307
+      },
+      "brier": 0.6036238869056053,
+      "ece": 0.13979980734323688,
+      "log_loss": 1.1902249969547163,
+      "n": 312
+    }
+  },
+  "gates": {
+    "A1_v2_acc_gt_hard": true,
+    "A2_v2_boundary_f1_gt_hard": true,
+    "A3_v2_logloss_beats_or_within_slack": true
+  },
+  "kill_condition": "if verdict FAIL: v2 operator DISABLED for solving (research-only); hard detector remains default; roll back is trivial because banks are untouched",
+  "killed_arm": "TAECMind.v2-softseg-killed",
+  "operator": "TAECMind.v2-fusedseg",
+  "status": "PROTOCOL_TEST_ONLY",
+  "verdict": "PASS"
+}

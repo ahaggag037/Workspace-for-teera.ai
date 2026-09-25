@@ -18,9 +18,16 @@
 2. ~~Sealed evaluator + independent held-out pack~~ DONE — easy + hard packs, seal-verified, warm PASS 4/4 on both.
 3. ~~Three seeds with confidence intervals~~ DONE — multiseed easy/hard, PASS 3/3 on accuracy with full deltas.
 4. ~~Lesson credit assignment~~ DONE — `credit --apply` persists use/success per lesson.
-5. Boundary-uncertainty-aware prediction (soft segmentation / n-best boundaries) — current bottleneck.
+5. ~~Boundary-uncertainty-aware prediction (soft segmentation)~~ DONE (2026-09-25) —
+   `TAECMind.v2-fusedseg`: fused-evidence boundaries + recency typing;
+   dev-tuned, eval-split PASS, sealed pack-hard-v2 PASS 4/4 with
+   dAcc +0.0321 / dLL −0.0538 / dbF1 +0.0373 vs the hard detector.
+   The n-best duration-plausibility mixture arm was killed in dev (P8).
 6. Compositional held-out: novel tokens and novel regime mixes never seen in training.
-7. First non-synthetic task family (e.g. log-like or tool-trace prediction) before any model-runner claim.
+7. Corruption-robust typing: accuracy (~0.53) is now bounded by transition
+   statistics under corruption, not boundaries — richer observation
+   features or type marginalization inside merged groups.
+8. First non-synthetic task family (e.g. log-like or tool-trace prediction) before any model-runner claim.
 3. Add explicit counterfactual/intervention branches (F4–F5).
 4. Add early-warning regime-shift fixtures (F6).
 5. Add prospective-memory cue/expiry fixtures (F8).

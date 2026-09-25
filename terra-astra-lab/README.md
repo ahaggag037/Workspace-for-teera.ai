@@ -4,9 +4,14 @@
 
 ## الحالة
 
-- `PROTOCOL_TEST_ONLY`: أول vertical slice لـ F1–F3 على عالم أحداث اصطناعي مضبوط، وقد تم تشغيله فعلياً.
+- `WARM / HELDOUT_PASS (pack-hard-v2, sealed)`: خمس بوابات مكتملة — آخرها
+  phase 4: مشغّل `TAECMind.v2-fusedseg` (حدود بالدليل المدمج + typing
+  بالأحدثية) عدّى البوابات المسجّلة مسبقاً على eval split، وعادى كاشف
+  الإنتاج على حزمة مختومة جديدة (dAcc +0.0321، dLL −0.0538، bF1 0.9903).
+  ذراع الـ n-best mixture اتقتلت في الـ dev واتسجّلت للمرجعية.
 - لا توجد تجربة نموذج خارجي أو claim عن capability.
-- `held-out` الحقيقي لم يُفتح بعد؛ بيانات هذا الإصدار protocol/dev وليست دليلاً تأكيدياً.
+- `held-out` التالي: compositional (tokens/regimes جديدة كلياً) — بيانات
+  هذا الإصدار protocol/dev وليست دليلاً تأكيدياً على العالم المفتوح.
 
 ## التشغيل
 
@@ -25,6 +30,11 @@ python -m taec_lab.cli multiseed --difficulty hard           # 3-seed confirmati
 python -m taec_lab.cli heldout-build --difficulty hard       # sealed pack
 python -m taec_lab.cli heldout-solve --brain-dir brain --predictions heldout/w.json
 python -m taec_lab.cli heldout-eval --predictions heldout/w.json --report heldout/v.json
+
+# Phase 4: soft-segmentation operator
+python -m taec_lab.cli softseg-eval                          # hard vs softmix vs v2 ablation
+python -m taec_lab.cli heldout-solve --brain-dir brain --segmentation v2 \
+    --pack-dir heldout/pack-hard-v2 --predictions heldout/w-v2.json
 ```
 
 التقرير الفعلي يكتب إلى:

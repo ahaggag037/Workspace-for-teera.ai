@@ -1,5 +1,63 @@
 # TAEC Lab Progress
 
+## 2026-09-25 — phase 4: soft segmentation resolved via fused-evidence boundaries + recency typing
+
+Status: `WARM / HELDOUT_PASS (pack-hard-v2, sealed)`
+
+Goal (from roadmap #5): boundary-uncertainty-aware prediction, because
+incremental hard learning was FLAT and the bottleneck was segmentation
+under corruption. Tuning happened on dev seeds 20500924.. ONLY; the eval
+split (20510924..) and the sealed pack (999601..) were untouched until the
+operator was frozen.
+
+What ran (all real, stdlib-only, deterministic; banks unchanged):
+
+- n-best mixture arm (`TAECMind.v2-softseg-killed`): KILLED in dev. It
+  never rescued a wrong anchor (6 correct→wrong vs 0 wrong→correct flips)
+  and its softmax flattening taxed log-loss. Root cause: the bank's hazard
+  duration tables conflate easy/hard gap regimes, so merged hypotheses fit
+  the learned durations better than the true segmentation. Also tried and
+  killed: transition-likelihood plausibility (merged typing still yields
+  plausible transitions).
+- surviving v2 operator (`TAECMind.v2-fusedseg`), simpler than what it
+  replaced: per-position fused evidence (gap + phase + lexicon-switch) with
+  the frozen rule "phase change OR true lexical-type switch", plus recency
+  typing (the final group's prediction type = type of its last lexical
+  token, so a merged group still predicts from the state that ended).
+- `softseg-eval` (pre-registered gates A1–A3, untouched eval split): PASS.
+  v2 acc 0.5032 vs hard 0.4679 (+0.0353), log-loss 1.1902 vs 1.2578
+  (−0.0676), boundary F1 0.9903 vs 0.9495. Dev split agrees (acc +0.016,
+  dLL −0.075, bF1 +0.036).
+- Sealed `heldout/pack-hard-v2` (12 traces, 156 next-event tasks, seeds
+  999601..999612, sha256 seal verified): `mind:WARM+fusedseg-v2` PASS 4/4 —
+  acc 0.5321 vs cold 0.1410 (dAcc +0.3910, dLL −0.7628), bF1 0.9903.
+  Against the production hard detector on the same sealed pack:
+  dAcc +0.0321, dLL −0.0538, dbF1 +0.0373.
+- Tests: 22/22 green (8 new phase-4 tests, incl. fixed-seed dominance
+  regression and a sealed-pack solve round-trip).
+
+Failures found and fixed (the loop working as designed):
+
+1. Sum-semantics duration likelihood over-rewarded fine segmentations
+   (each extra pair adds ~−log(sd) > 0 regardless of fit) → reverted to
+   mean semantics with an evidence-accumulation boundary bonus.
+2. The H-lex rule fired on lexical→distractor inside events (the last
+   offset can be a distractor 15% of the time) → restricted the rule to
+   true lexical-type switches.
+3. The mixture's plausibility signal itself was the problem: the bank's
+   hazard durations mix easy (1.0–1.25) and hard (0.2–0.4) gap regimes, so
+   merged hypotheses scored as MORE plausible than the truth. Killing the
+   arm and replacing the signal (lexical evidence + recency typing) was
+   the fix, not more tuning.
+
+Standing cautions:
+
+- Boundary F1 for the cold baseline is already ~0.95 on this world, so
+  boundary gains saturate near 0.99; accuracy (~0.53) is now limited by
+  transition statistics under corruption, not boundaries.
+- All gates remain synthetic; next frontier is a compositional held-out
+  (novel tokens / regime mixes) and then a non-synthetic task family.
+
 ## 2026-09-24 — phase 3: hardness, multiseed, sealed held-out, self-grading bank
 
 Status: `WARM / HELDOUT_PASS (synthetic, sealed)`

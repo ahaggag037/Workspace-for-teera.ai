@@ -44,6 +44,8 @@ def main() -> int:
     hb = subparsers.add_parser("heldout-build", help="build sealed held-out task pack")
     hb.add_argument("--out-dir", default="heldout/pack-v1")
     hb.add_argument("--traces", type=int, default=12)
+    hb.add_argument("--seed-start", type=int, default=999001,
+                    help="pack seed start; keep disjoint from all dev ranges")
     hb.add_argument("--difficulty", default="hard", choices=("easy", "hard"))
 
     hs = subparsers.add_parser("heldout-solve", help="solve pack with a Mind (or cold baseline)")
@@ -51,6 +53,8 @@ def main() -> int:
     hs.add_argument("--predictions", default="heldout/predictions.json")
     hs.add_argument("--brain-dir", default=None,
                     help="brain to solve with; omit for cold-uniform baseline")
+    hs.add_argument("--segmentation", default="hard", choices=("hard", "soft", "v2"),
+                    help="hard detector (default), fusedseg-v2 candidate, or killed soft arm")
 
     he = subparsers.add_parser("heldout-eval", help="verify seal and score predictions")
     he.add_argument("--pack-dir", default="heldout/pack-v1")
@@ -74,6 +78,18 @@ def main() -> int:
 
     status = subparsers.add_parser("status", help="show brain bank status")
     status.add_argument("--brain-dir", default=str(default_brain_dir()))
+
+    sseg = subparsers.add_parser(
+        "softseg-eval",
+        help="ablation: hard vs soft segmentation on frozen banks (pre-registered gates)",
+    )
+    sseg.add_argument("--dev-seed-start", type=int, default=20500924)
+    sseg.add_argument("--eval-seed-start", type=int, default=20510924)
+    sseg.add_argument("--n-dev", type=int, default=24)
+    sseg.add_argument("--n-eval", type=int, default=24)
+    sseg.add_argument("--difficulty", default="hard", choices=("easy", "hard"))
+    sseg.add_argument("--brain-dir", default=str(default_brain_dir()))
+    sseg.add_argument("--report-dir", default="reports")
 
     recall = subparsers.add_parser("recall", help="retrieve knowledge items")
     recall.add_argument("query")
@@ -106,12 +122,12 @@ def main() -> int:
         return 0
     if args.command == "heldout-build":
         manifest = build_pack(out_dir=args.out_dir, n_traces=args.traces,
-                              difficulty=args.difficulty)
+                              seed_start=args.seed_start, difficulty=args.difficulty)
         print(json.dumps(manifest, indent=2, sort_keys=True))
         return 0
     if args.command == "heldout-solve":
         result = solve_pack(pack_dir=args.pack_dir, predictions_path=args.predictions,
-                            brain_dir=args.brain_dir)
+                            brain_dir=args.brain_dir, segmentation=args.segmentation)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     if args.command == "heldout-eval":
@@ -147,6 +163,20 @@ def main() -> int:
             "weights_empty": mind.weights.is_empty(),
         }
         print(json.dumps(payload, indent=2, sort_keys=True))
+        return 0
+    if args.command == "softseg-eval":
+        from .softseg import run_softseg_eval
+
+        report = run_softseg_eval(
+            dev_seed_start=args.dev_seed_start,
+            eval_seed_start=args.eval_seed_start,
+            n_dev=args.n_dev,
+            n_eval=args.n_eval,
+            difficulty=args.difficulty,
+            brain_dir=args.brain_dir,
+            report_dir=Path(args.report_dir),
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
         return 0
     if args.command == "recall":
         mind = TAECMind(brain_dir=args.brain_dir)

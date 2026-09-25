@@ -68,6 +68,10 @@ class EventParser:
             for token in tokens
         }
 
+    def token_type(self, token: str) -> str | None:
+        """Lexicon event-type for a token, or None for distractors/unknown."""
+        return self._reverse.get(token.lower())
+
     def parse_type(self, observations: list[Observation]) -> tuple[str, float, tuple[str, ...]]:
         scores: Counter[str] = Counter()
         evidence: list[str] = []
@@ -95,11 +99,27 @@ class EventCompiler:
         self.detector = BoundaryDetector(gap_threshold=gap_threshold)
         self.parser = EventParser(lexicon=lexicon)
 
-    def compile(self, observations: Iterable[Observation], trace_id: str = "trace") -> EventGraph:
+    def compile(
+        self,
+        observations: Iterable[Observation],
+        trace_id: str = "trace",
+        starts: list[int] | None = None,
+    ) -> EventGraph:
         ordered = list(observations)
         if not ordered:
             return EventGraph()
-        starts = self.detector.boundary_positions(ordered)
+        if starts is None:
+            starts = self.detector.boundary_positions(ordered)
+            boundary_source = "detector"
+        else:
+            starts = sorted(int(position) for position in starts)
+            if not starts or starts[0] != 0:
+                starts = [0] + starts
+            if any(position < 0 or position >= len(ordered) for position in starts):
+                raise ValueError("explicit boundary positions out of range")
+            if len(set(starts)) != len(starts):
+                raise ValueError("duplicate boundary positions")
+            boundary_source = "explicit"
         groups: list[list[Observation]] = []
         for position, start in enumerate(starts):
             end = starts[position + 1] if position + 1 < len(starts) else len(ordered)
@@ -126,7 +146,11 @@ class EventCompiler:
                 causal_parents=(previous.event_id,) if previous else tuple(),
                 temporal_relations={"previous": previous.event_id} if previous else {},
                 semantic_tags=tuple(sorted(set(evidence))),
-                provenance={"operator": "EventCompiler.v0", "observation_count": len(group)},
+                provenance={
+                    "operator": "EventCompiler.v0",
+                    "observation_count": len(group),
+                    "boundary_source": boundary_source,
+                },
             )
             events.append(event)
             previous = event

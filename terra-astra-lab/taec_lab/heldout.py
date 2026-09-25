@@ -1,10 +1,12 @@
 """Sealed held-out task pack + independent evaluator.
 
 Seed ledger (disjoint ranges, never overlap):
-- learn/train:      20260924 ..
+- learn/train:      20260924 .., 20270001 ..
 - protocol test:    seed + 10000 ..
-- credit/dev:       seed + 20000 ..
-- HELD-OUT PACK:    999001 ..   <-- only the evaluator reads truths
+- credit/dev:       20280924 ..
+- softseg dev/eval: 20500924 .., 20510924 ..   (phase-4 operator tuning)
+- HELD-OUT PACK v1: 999001 ..   (only the evaluator reads truths)
+- HELD-OUT PACK v2: 999601 ..   (phase-4 sealed attempt; fusedseg-v2)
 
 The pack ships observations without labels. Truths live in a separate
 file sealed by sha256 in the manifest. `evaluate_predictions` refuses to
@@ -115,11 +117,18 @@ def solve_pack(
     pack_dir: str | Path,
     predictions_path: str | Path,
     brain_dir: str | Path | None = None,
+    segmentation: str = "hard",
 ) -> dict[str, Any]:
     """Run a TAECMind over the pack and write a predictions file.
 
     brain_dir=None -> cold uniform mind in a temp dir (baseline solver).
+    segmentation="hard" -> production detector (default, backward compatible).
+    segmentation="v2"   -> fused-evidence boundaries + recency typing
+                           (TAECMind.v2-fusedseg; adoption candidate).
+    segmentation="soft" -> killed n-best mixture arm (kept for the record).
     """
+    from .softseg import FusedSegMind, SoftSegMind
+
     pack = json.loads((Path(pack_dir) / "pack.json").read_text(encoding="utf-8"))
     if brain_dir is None:
         tmp = tempfile.mkdtemp(prefix="taec-heldout-cold-")
@@ -128,23 +137,49 @@ def solve_pack(
     else:
         mind = TAECMind(brain_dir=brain_dir)
         solver = f"mind:{mind.status}"
+    if segmentation == "soft":
+        solver = f"{solver}+softseg-killed"
+        mind = SoftSegMind(brain_dir=mind.brain_dir)
+    if segmentation == "v2":
+        solver = f"{solver}+fusedseg-v2"
+        mind = FusedSegMind(brain_dir=mind.brain_dir)
     next_preds: dict[str, dict[str, float]] = {}
     for task in pack["next_event_tasks"]:
         obs = _to_observations(task["observations"])
-        graph = mind.compile(obs, trace_id=task["trace_id"])
-        result = mind.predict_next(graph.events, regime=task["regime"])
+        if segmentation == "soft":
+            result = mind.predict_next_from_observations(
+                obs, regime=task["regime"], trace_id=task["trace_id"]
+            )
+        elif segmentation == "v2":
+            result = mind.predict_next_fused(
+                obs, regime=task["regime"], trace_id=task["trace_id"]
+            )
+        else:
+            graph = mind.compile(obs, trace_id=task["trace_id"])
+            result = mind.predict_next(graph.events, regime=task["regime"])
         next_preds[task["task_id"]] = result.probabilities
     bound_preds: dict[str, list[int]] = {}
     for task in pack["boundary_tasks"]:
         obs = _to_observations(task["observations"])
-        graph = mind.compile(obs, trace_id=task["trace_id"])
-        bound_preds[task["task_id"]] = (
-            [e.source_indices[0] for e in graph.events[1:]] if len(graph.events) > 1 else []
-        )
-    payload = {"solver": solver, "next_event": next_preds, "boundaries": bound_preds}
+        if segmentation == "soft":
+            bound_preds[task["task_id"]] = mind.modal_boundaries(obs)
+        elif segmentation == "v2":
+            bound_preds[task["task_id"]] = mind.fused_starts(obs)[1:]
+        else:
+            graph = mind.compile(obs, trace_id=task["trace_id"])
+            bound_preds[task["task_id"]] = (
+                [e.source_indices[0] for e in graph.events[1:]] if len(graph.events) > 1 else []
+            )
+    payload = {
+        "solver": solver,
+        "segmentation": segmentation,
+        "next_event": next_preds,
+        "boundaries": bound_preds,
+    }
     Path(predictions_path).write_text(json.dumps(payload, indent=1, sort_keys=True),
                                        encoding="utf-8")
-    return {"solver": solver, "n_next": len(next_preds), "n_bound": len(bound_preds)}
+    return {"solver": solver, "segmentation": segmentation,
+            "n_next": len(next_preds), "n_bound": len(bound_preds)}
 
 
 def evaluate_predictions(

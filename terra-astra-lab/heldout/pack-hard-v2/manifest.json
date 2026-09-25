@@ -1,0 +1,14 @@
+{
+  "difficulty": "hard",
+  "gates": {
+    "G1": "seal_ok",
+    "G2": "acc > cold_acc",
+    "G3": "logloss < cold_logloss",
+    "G4": "boundary_f1 >= 0.50"
+  },
+  "n_boundary_tasks": 12,
+  "n_next_tasks": 156,
+  "pack_sha256": "462ab4d570bf5cbbad407cf1cb45926692b547ff426a48bcd49676550920268e",
+  "seed_start": 999601,
+  "truths_sha256": "8e2987f93478ec0402dfe67a4d526d480729cf36732cd47b075b6d1626394440"
+}
