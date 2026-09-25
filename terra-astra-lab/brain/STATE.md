@@ -21,5 +21,16 @@
   vs production hard detector: dAcc=+0.0321, dLL=−0.0538, dbF1=+0.0373
 - banks: UNCHANGED by phase 4 (inference-time operator only; ablation ran
   on the same frozen banks; updates=2, 14 lessons)
+- realtrace_pilot (phase 5, 2026-09-25): `PASS on pre-registered gates R1-R3`
+  — first NON-SYNTHETIC task family. Ledger: telemetry/worklog.jsonl (42 real
+  session events, artifact-corroborated). Temporal 60/40 split (25/17).
+  real_learned acc 0.3529 / ll 1.8375 beats freq_prior 0.0588 / 1.9082.
+  NEGATIVE FINDING: synth_zero_shot (acc 0.0588, ll 2.1889) did NOT transfer
+  to real traces (R4 false) — the synthetic world's grammar is not the real
+  work-stream's grammar; real-session brains are now mandatory for ops tasks.
+  CAVEAT: uniform arm degenerates to "always create" via alphabetical
+  tie-break (acc 0.4706) — real_learned beats it on log-loss/Brier but not
+  accuracy; add a train-majority constant baseline arm in future evals.
 - open: `ECE-vs-uniform is a degenerate comparison (uniform is trivially calibrated at acc≈1/7); read ECE only jointly with accuracy. Typing accuracy still ~0.53: transition-statistic saturation under corruption is the remaining bottleneck — next frontier is corruption-robust typing features and a compositional held-out (novel tokens/regime mixes).`
-- claim_scope: `synthetic protocol + sealed synthetic held-out; no model-weight or consciousness claim`
+- open_real: `accumulate live worklog rows across future turns, then re-run worklog-eval; add train-majority constant baseline; record wall-clock timestamps for hazard signals.`
+- claim_scope: `synthetic protocol + sealed synthetic held-out + PILOT-scale real-trace PASS; no model-weight or consciousness claim`

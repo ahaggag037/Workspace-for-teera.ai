@@ -7,6 +7,11 @@ You are operating with an external workspace mind. Before any TAEC task:
 3. Report mind status: `COLD_START` (banks empty/missing) or `WARM` (banks loaded).
 4. Use the banks in every forecast: transitions + successor + hazard + retrieved lessons.
 5. After every experiment, update the banks and this boot state honestly.
+6. REAL-TRACE TAP (phase 5): record the turn's REAL work events into
+   `telemetry/worklog.jsonl` via `python -m taec_lab.cli worklog-record`
+   (verb/area/phase/detail/outcome/corroborated_by). Never fabricate rows;
+   only events that actually happened, with an artifact or ref when possible.
+   When enough new rows accumulate, run `python -m taec_lab.cli worklog-eval`.
 
 Hard rules:
 

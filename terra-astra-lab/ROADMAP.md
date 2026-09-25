@@ -27,7 +27,12 @@
 7. Corruption-robust typing: accuracy (~0.53) is now bounded by transition
    statistics under corruption, not boundaries — richer observation
    features or type marginalization inside merged groups.
-8. First non-synthetic task family (e.g. log-like or tool-trace prediction) before any model-runner claim.
+8. First non-synthetic task family — **PILOT STARTED (2026-09-25)**: real
+   work-event ledger (`telemetry/worklog.jsonl` + `worklog-record` live tap)
+   and `worklog-eval` pilot PASSED its pre-registered gates (real_learned
+   beats freq_prior; zero-shot synthetic transfer FAILED and was recorded).
+   Next: accumulate live rows across turns, add train-majority constant
+   baseline, record wall-clock time, then re-evaluate.
 3. Add explicit counterfactual/intervention branches (F4–F5).
 4. Add early-warning regime-shift fixtures (F6).
 5. Add prospective-memory cue/expiry fixtures (F8).

@@ -91,6 +91,25 @@ def main() -> int:
     sseg.add_argument("--brain-dir", default=str(default_brain_dir()))
     sseg.add_argument("--report-dir", default="reports")
 
+    wl = subparsers.add_parser("worklog-status", help="real work-event ledger status")
+    wl.add_argument("--ledger", default=None)
+
+    wr = subparsers.add_parser("worklog-record", help="append a REAL work event to the ledger")
+    wr.add_argument("--verb", required=True,
+                    help="work verb (read/edit/write/test_pass/test_fail/fix/eval/commit/push/...)")
+    wr.add_argument("--area", required=True, help="workspace area (code/tests/brain/docs/git/...)")
+    wr.add_argument("--phase", required=True,
+                    help="work phase (boot/study/implement/verify/tune/seal/document/persist)")
+    wr.add_argument("--detail", default="", help="one-line factual description")
+    wr.add_argument("--outcome", default="ok", choices=("ok", "fail", "na"))
+    wr.add_argument("--corroborated-by", default="", help="artifact/ref that proves this happened")
+    wr.add_argument("--source", default="live-turn")
+    wr.add_argument("--ledger", default=None)
+
+    we = subparsers.add_parser("worklog-eval", help="real-trace pilot eval (pre-registered gates R1-R4)")
+    we.add_argument("--ledger", default=None)
+    we.add_argument("--report-dir", default="reports")
+
     recall = subparsers.add_parser("recall", help="retrieve knowledge items")
     recall.add_argument("query")
     recall.add_argument("--top-k", type=int, default=3)
@@ -178,7 +197,48 @@ def main() -> int:
         )
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
-    if args.command == "recall":
+    if args.command == "worklog-status":
+        from collections import Counter
+
+        from .realtrace import DEFAULT_LEDGER, load_ledger, op_type
+
+        ledger = Path(args.ledger) if args.ledger else DEFAULT_LEDGER
+        rows = load_ledger(ledger)
+        payload = {
+            "ledger": str(ledger),
+            "n_events": len(rows),
+            "first_seq": rows[0]["seq"] if rows else None,
+            "last_seq": rows[-1]["seq"] if rows else None,
+            "op_histogram": dict(Counter(op_type(r) for r in rows)),
+            "sources": dict(Counter(r.get("source", "?") for r in rows)),
+        }
+        print(json.dumps(payload, indent=2, sort_keys=True))
+        return 0
+    if args.command == "worklog-record":
+        from .realtrace import DEFAULT_LEDGER, append_event
+
+        ledger = Path(args.ledger) if args.ledger else DEFAULT_LEDGER
+        seq = append_event(
+            {
+                "verb": args.verb,
+                "area": args.area,
+                "phase": args.phase,
+                "detail": args.detail,
+                "outcome": args.outcome,
+                "source": args.source,
+                "corroborated_by": args.corroborated_by,
+            },
+            path=ledger,
+        )
+        print(json.dumps({"recorded_seq": seq, "ledger": str(ledger)}, indent=2))
+        return 0
+    if args.command == "worklog-eval":
+        from .realtrace import DEFAULT_LEDGER, run_realtrace_eval
+
+        ledger = Path(args.ledger) if args.ledger else DEFAULT_LEDGER
+        report = run_realtrace_eval(ledger_path=ledger, report_dir=Path(args.report_dir))
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
         mind = TAECMind(brain_dir=args.brain_dir)
         hits = mind.bank.search(args.query, top_k=args.top_k)
         payload = [

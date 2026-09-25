@@ -1,5 +1,41 @@
 # TAEC Lab Progress
 
+## 2026-09-25 — phase 5: first REAL-trace task family (worklog tap + pilot PASS with honest caveats)
+
+Status: `WARM / PILOT_REAL_TRACE (worklog.jsonl, pre-registered gates)`
+
+The lab crossed the synthetic boundary. Roadmap gate #8 (first half) is now
+started: a REAL, non-synthetic task family — the agent's own work stream.
+
+Built (all real, stdlib-only, deterministic):
+
+- `telemetry/worklog.jsonl`: append-only ledger of REAL work events
+  (42 rows from the phase-4 session, each corroborated by an artifact or
+  git ref; failures included). New rows append live via
+  `python -m taec_lab.cli worklog-record` (now part of BOOT protocol step 6).
+- `taec_lab/realtrace.py`: deterministic verb→7-type ontology lexicon
+  (OPS_LEXICON), observation adapter (sequence time; wall time not recorded
+  this session), temporal 60/40 split, four pre-registered arms
+  (uniform / freq_prior / synth_zero_shot / real_learned) and gates
+  R1-R4 written BEFORE the first eval run.
+- Pilot result (17-point test segment): real_learned acc 0.3529 /
+  ll 1.8375 beats freq_prior acc 0.0588 / ll 1.9082 → R2+R3 PASS.
+- NEGATIVE FINDING (recorded as such): synth_zero_shot acc 0.0588 /
+  ll 2.1889 — the synthetic banks do NOT transfer zero-shot to real work
+  streams (R4 false). Real-session brains are now mandatory for ops tasks;
+  this is exactly the failure mode real pilots exist to expose.
+- CAVEAT (recorded, not patched post-hoc): the uniform arm degenerates to
+  "always create" via alphabetical tie-break (acc 0.4706); real_learned
+  beats it on log-loss (1.84 vs 1.95) and Brier but not accuracy. Next eval
+  adds a pre-registered train-majority constant baseline arm.
+- Tests: 26/26 green (4 new real-trace tests incl. fixture-ledger
+  INCONCLUSIVE path and synthetic-brain isolation).
+
+Honesty: pilot scale, one session, small-n — directional, not confirmatory.
+The synthetic brain remains the only brain for the synthetic protocol;
+real-trace learning uses a separate temp brain and never writes the
+synthetic banks.
+
 ## 2026-09-25 — phase 4: soft segmentation resolved via fused-evidence boundaries + recency typing
 
 Status: `WARM / HELDOUT_PASS (pack-hard-v2, sealed)`

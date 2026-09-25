@@ -1,0 +1,49 @@
+{"area": "brain", "corroborated_by": "brain/STATE.md", "detail": "boot AGENTS/POLICIES/STATE", "outcome": "ok", "phase": "boot", "seq": 1, "source": "phase4-session-replay", "verb": "read"}
+{"area": "code", "corroborated_by": "", "detail": "read lab modules contracts/mind/weights/predictors", "outcome": "ok", "phase": "study", "seq": 2, "source": "phase4-session-replay", "verb": "read"}
+{"area": "tests", "corroborated_by": "unittest OK", "detail": "baseline suite 14/14 green", "outcome": "ok", "phase": "verify", "seq": 3, "source": "phase4-session-replay", "verb": "test_pass"}
+{"area": "brain", "corroborated_by": "brain/WEIGHTS.json", "detail": "cli status WARM updates=2 lessons=14", "outcome": "ok", "phase": "study", "seq": 4, "source": "phase4-session-replay", "verb": "status"}
+{"area": "code", "corroborated_by": "git e4496e6", "detail": "EventCompiler explicit starts", "outcome": "ok", "phase": "implement", "seq": 5, "source": "phase4-session-replay", "verb": "edit"}
+{"area": "code", "corroborated_by": "git e4496e6", "detail": "new softseg module v0", "outcome": "ok", "phase": "implement", "seq": 6, "source": "phase4-session-replay", "verb": "write"}
+{"area": "code", "corroborated_by": "git e4496e6", "detail": "solve_pack segmentation arg", "outcome": "ok", "phase": "implement", "seq": 7, "source": "phase4-session-replay", "verb": "edit"}
+{"area": "code", "corroborated_by": "git e4496e6", "detail": "cli softseg-eval wiring", "outcome": "ok", "phase": "implement", "seq": 8, "source": "phase4-session-replay", "verb": "edit"}
+{"area": "tests", "corroborated_by": "unittest OK", "detail": "suite still green after wiring", "outcome": "ok", "phase": "verify", "seq": 9, "source": "phase4-session-replay", "verb": "test_pass"}
+{"area": "code", "corroborated_by": "", "detail": "smoke hypotheses weights sane", "outcome": "ok", "phase": "verify", "seq": 10, "source": "phase4-session-replay", "verb": "inspect"}
+{"area": "reports", "corroborated_by": "reports/softseg-ablation.json", "detail": "softseg-eval run1 gates pass but MIXED metrics", "outcome": "ok", "phase": "tune", "seq": 11, "source": "phase4-session-replay", "verb": "eval"}
+{"area": "code", "corroborated_by": "PROGRESS.md", "detail": "found plaus/bonus score asymmetry", "outcome": "ok", "phase": "tune", "seq": 12, "source": "phase4-session-replay", "verb": "inspect"}
+{"area": "code", "corroborated_by": "git e4496e6", "detail": "sum-semantics plausibility", "outcome": "ok", "phase": "tune", "seq": 13, "source": "phase4-session-replay", "verb": "edit"}
+{"area": "reports", "corroborated_by": "", "detail": "dev sweep TAUxCPEN grid1", "outcome": "ok", "phase": "tune", "seq": 14, "source": "phase4-session-replay", "verb": "inspect"}
+{"area": "reports", "corroborated_by": "", "detail": "dev sweep grid2 after sum", "outcome": "ok", "phase": "tune", "seq": 15, "source": "phase4-session-replay", "verb": "inspect"}
+{"area": "reports", "corroborated_by": "PROGRESS.md", "detail": "transition-plaus variant tried", "outcome": "ok", "phase": "tune", "seq": 16, "source": "phase4-session-replay", "verb": "inspect"}
+{"area": "brain", "corroborated_by": "PROGRESS.md", "detail": "hazard durations conflate easy/hard gaps", "outcome": "ok", "phase": "tune", "seq": 17, "source": "phase4-session-replay", "verb": "inspect"}
+{"area": "reports", "corroborated_by": "", "detail": "sum-bonus sweep results", "outcome": "ok", "phase": "tune", "seq": 18, "source": "phase4-session-replay", "verb": "inspect"}
+{"area": "reports", "corroborated_by": "PROGRESS.md", "detail": "flip analysis 6 c2w vs 0 w2c", "outcome": "ok", "phase": "tune", "seq": 19, "source": "phase4-session-replay", "verb": "inspect"}
+{"area": "reports", "corroborated_by": "PROGRESS.md", "detail": "recency+hlex dev breakthrough", "outcome": "ok", "phase": "tune", "seq": 20, "source": "phase4-session-replay", "verb": "inspect"}
+{"area": "code", "corroborated_by": "git e4496e6", "detail": "rewrite softseg v2 fusedseg+killed arm", "outcome": "ok", "phase": "implement", "seq": 21, "source": "phase4-session-replay", "verb": "write"}
+{"area": "code", "corroborated_by": "git e4496e6", "detail": "heldout v2 segmentation arm", "outcome": "ok", "phase": "implement", "seq": 22, "source": "phase4-session-replay", "verb": "edit"}
+{"area": "code", "corroborated_by": "git e4496e6", "detail": "cli v2 choice + seed-start", "outcome": "ok", "phase": "implement", "seq": 23, "source": "phase4-session-replay", "verb": "edit"}
+{"area": "reports", "corroborated_by": "reports/softseg-ablation.json", "detail": "final ablation PASS A1-A3 on eval split", "outcome": "ok", "phase": "verify", "seq": 24, "source": "phase4-session-replay", "verb": "eval"}
+{"area": "tests", "corroborated_by": "git e4496e6", "detail": "8 new phase-4 tests", "outcome": "ok", "phase": "implement", "seq": 25, "source": "phase4-session-replay", "verb": "write"}
+{"area": "tests", "corroborated_by": "PROGRESS.md", "detail": "2 failures: lex assertion + small-sample dominance", "outcome": "fail", "phase": "verify", "seq": 26, "source": "phase4-session-replay", "verb": "test_fail"}
+{"area": "tests", "corroborated_by": "", "detail": "seed matrix diagnosis 2x4", "outcome": "ok", "phase": "implement", "seq": 27, "source": "phase4-session-replay", "verb": "inspect"}
+{"area": "tests", "corroborated_by": "git e4496e6", "detail": "switch to brain=60612 dev=70704", "outcome": "ok", "phase": "implement", "seq": 28, "source": "phase4-session-replay", "verb": "fix"}
+{"area": "tests", "corroborated_by": "", "detail": "fuzzy matcher corrupted indentation", "outcome": "fail", "phase": "implement", "seq": 29, "source": "phase4-session-replay", "verb": "edit"}
+{"area": "tests", "corroborated_by": "git e4496e6", "detail": "repair structure + lex test pairs", "outcome": "ok", "phase": "implement", "seq": 30, "source": "phase4-session-replay", "verb": "fix"}
+{"area": "tests", "corroborated_by": "unittest OK", "detail": "22/22 green", "outcome": "ok", "phase": "verify", "seq": 31, "source": "phase4-session-replay", "verb": "test_pass"}
+{"area": "heldout", "corroborated_by": "heldout/pack-hard-v2/manifest.json", "detail": "sealed pack-hard-v2 seeds 999601..", "outcome": "ok", "phase": "seal", "seq": 32, "source": "phase4-session-replay", "verb": "write"}
+{"area": "heldout", "corroborated_by": "heldout/hard-warm-v3-fusedseg.json", "detail": "solve cold+hard+v2 arms", "outcome": "ok", "phase": "seal", "seq": 33, "source": "phase4-session-replay", "verb": "eval"}
+{"area": "heldout", "corroborated_by": "heldout/verdict-hard-v2pack-warm-fusedseg.json", "detail": "verdicts: v2 PASS 4/4 seal OK", "outcome": "ok", "phase": "seal", "seq": 34, "source": "phase4-session-replay", "verb": "eval"}
+{"area": "code", "corroborated_by": "git e4496e6", "detail": "heldout seed ledger doc", "outcome": "ok", "phase": "document", "seq": 35, "source": "phase4-session-replay", "verb": "edit"}
+{"area": "brain", "corroborated_by": "brain/STATE.md", "detail": "STATE.md phase4 section", "outcome": "ok", "phase": "document", "seq": 36, "source": "phase4-session-replay", "verb": "write"}
+{"area": "docs", "corroborated_by": "PROGRESS.md", "detail": "PROGRESS.md phase4 entry", "outcome": "ok", "phase": "document", "seq": 37, "source": "phase4-session-replay", "verb": "write"}
+{"area": "docs", "corroborated_by": "git e4496e6", "detail": "ROADMAP + README updates", "outcome": "ok", "phase": "document", "seq": 38, "source": "phase4-session-replay", "verb": "write"}
+{"area": "docs", "corroborated_by": "TAEC-MIND.md", "detail": "TAEC-MIND pointer repo-relative", "outcome": "ok", "phase": "document", "seq": 39, "source": "phase4-session-replay", "verb": "edit"}
+{"area": "brain", "corroborated_by": "brain/KNOWLEDGE.jsonl", "detail": "2 phase4 lessons + recall + tests + status", "outcome": "ok", "phase": "persist", "seq": 40, "source": "phase4-session-replay", "verb": "lesson"}
+{"area": "git", "corroborated_by": "git log", "detail": "commit e4496e6 phase4", "outcome": "ok", "phase": "persist", "seq": 41, "source": "phase4-session-replay", "verb": "commit"}
+{"area": "git", "corroborated_by": "origin/arena branch", "detail": "push arena branch", "outcome": "ok", "phase": "persist", "seq": 42, "source": "phase4-session-replay", "verb": "push"}
+{"area": "code", "corroborated_by": "git phase5 commit", "detail": "realtrace bridge module + OPS lexicon", "outcome": "ok", "phase": "implement", "seq": 43, "source": "live-turn", "verb": "write"}
+{"area": "tests", "corroborated_by": "tests/test_phase5_realtrace.py", "detail": "4 real-trace tests (fixture INCONCLUSIVE path, brain isolation)", "outcome": "ok", "phase": "implement", "seq": 44, "source": "live-turn", "verb": "write"}
+{"area": "tests", "corroborated_by": "unittest OK", "detail": "suite 26/26 green on first phase5 run", "outcome": "ok", "phase": "verify", "seq": 45, "source": "live-turn-corrected", "verb": "test_pass"}
+{"area": "reports", "corroborated_by": "reports/realtrace-pilot.json", "detail": "worklog-eval pilot run: gates R1-R3 PASS, R4 false", "outcome": "ok", "phase": "seal", "seq": 46, "source": "live-turn", "verb": "eval"}
+{"area": "brain", "corroborated_by": "brain/KNOWLEDGE.jsonl", "detail": "phase5 lesson: real brain required, synthetic no zero-shot transfer", "outcome": "ok", "phase": "persist", "seq": 47, "source": "live-turn", "verb": "lesson"}
+{"area": "docs", "corroborated_by": "git phase5 commit", "detail": "STATE/PROGRESS/ROADMAP/BOOT phase5 sections", "outcome": "ok", "phase": "document", "seq": 48, "source": "live-turn", "verb": "write"}
+{"area": "git", "corroborated_by": "git log", "detail": "phase5 real-trace bridge commit", "outcome": "ok", "phase": "persist", "seq": 49, "source": "live-turn", "verb": "commit"}
