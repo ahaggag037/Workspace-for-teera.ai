@@ -62,5 +62,15 @@
   ops-learn tick; first tick absorbed 10 new events, 59->68 transitions).
   Gates C1-C5 all PASS pre-registered. Limits: host/proxy untouchable,
   packages session-scoped (declarative reinstall), no inbound internet.
+- boundary_assault (phase 10, 2026-09-25): re-attacked every phase-9 limit.
+  BROKEN: session-scoped packages -> server/vendor committed (V1: /health
+  serves vitals with zero installed psutil; zero-network revival); meta-refresh
+  -> SSE /events + /live.js (V2). MAPPED: allowlist = package managers only
+  (pypi+pythonhosted+github+npmjs open; raw.githubusercontent/jsdelivr/
+  huggingface/debian blocked); port 80 binds locally as root; systemd PID1
+  without D-Bus. PRINCIPLED NO (permanent): sandbox escape / host mod /
+  allowlist circumvention — platform contract, not capability gap
+  (lesson-phase10-boundaries). pkill guard lesson #2 recorded (compound
+  command lines self-match).
 - open_real: `accumulate live rows (ops-learn after bursts); re-run worklog-eval when n_test >= 25; add wall-clock timestamps; then decide whether phase_markov replaces markov as the ops-forecast operator; ops-forecast is advisory, never an instruction.`
 - claim_scope: `synthetic protocol + sealed synthetic held-out + PILOT-scale real-trace PASS; no model-weight or consciousness claim`

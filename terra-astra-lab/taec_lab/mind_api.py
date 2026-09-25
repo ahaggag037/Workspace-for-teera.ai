@@ -17,10 +17,19 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
+import sys
 import time
 from collections import Counter
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+
+# Vendored dependencies (phase 10): server/vendor is committed to the repo,
+# so psutil survives sandbox revival WITHOUT any network or reinstall —
+# the session-scoped-packages limitation does not apply to repo files.
+_VENDOR = Path(__file__).resolve().parents[2] / "server" / "vendor"
+if _VENDOR.is_dir():
+    sys.path.insert(0, str(_VENDOR))
 
 from .knowledge import KnowledgeBank
 from .mind import TAECMind
@@ -62,7 +71,7 @@ PAGE = """<!doctype html>
  .muted {{ color:#9db4b8; }}
  code {{ color:#e0b25c; }}
 </style></head><body>
-<h1>🧠 TAEC Mind — لوحة حية (v2)</h1>
+<h1>🧠 TAEC Mind — لوحة حية (v2) <span id="live-badge" class="muted" style="font-size:.8rem">● live</span></h1>
 <div class="sub">عقل خارجي فوق مساحة العمل — قراءة فقط • تحديث كل 30 ثانية • {generated_at} • uptime {uptime_min} د</div>
 <div class="grid">
   <div class="card"><h2>الحالة (الاصطناعي)</h2>
@@ -73,7 +82,7 @@ PAGE = """<!doctype html>
       <tr><td>آثار تدريب</td><td>{train_traces}</td></tr>
     </table></div>
   <div class="card"><h2>الدماغ التشغيلية (الحقيقي)</h2>
-    <div class="big">{ops_transitions} <span class="muted" style="font-size:.9rem">انتقال</span></div>
+    <div class="big"><span id="ops-transitions">{ops_transitions}</span> <span class="muted" style="font-size:.9rem">انتقال</span></div>
     <table>
       <tr><td>أنماط (طور|نوع)</td><td><b>{ops_pair_keys}</b></td></tr>
       <tr><td>تحديثات</td><td>{ops_updates}</td></tr>
@@ -86,15 +95,39 @@ PAGE = """<!doctype html>
     <div class="big">{ledger_n} <span class="muted" style="font-size:.9rem">حدث</span></div>
     <table>{ledger_rows}</table></div>
   <div class="card"><h2>حياة السيرفر (v2)</h2>
-    <div class="big">{requests_total} <span class="muted" style="font-size:.9rem">طلب مخدوم</span></div>
+    <div class="big"><span id="req-total">{requests_total}</span> <span class="muted" style="font-size:.9rem">طلب مخدوم</span></div>
     <table>
       <tr><td>الذاكرة المستخدمة</td><td><b>{mem_percent}%</b></td></tr>
       <tr><td>CPU الآن</td><td><b>{cpu_percent}%</b></td></tr>
       <tr><td>avg latency</td><td>{avg_ms} ms</td></tr>
     </table></div>
 </div>
-<div class="sub" style="margin-top:1.5rem">JSON: <code>/status</code> · <code>/forecast</code> · <code>/lessons</code> · <code>/ledger</code> · <code>/health</code> · <code>/metrics</code> — التنبؤات قراءات استشارية وليست تعليمات.</div>
+<div class="sub" style="margin-top:1.5rem">JSON: <code>/status</code> · <code>/forecast</code> · <code>/lessons</code> · <code>/ledger</code> · <code>/health</code> · <code>/metrics</code> · <code>/events</code> (SSE) — التنبؤات قراءات استشارية وليست تعليمات.</div>
+<script src="/live.js"></script>
 </body></html>"""
+
+
+LIVE_JS = """// TAEC Mind live updates via SSE (no page refresh needed)
+const badge = document.getElementById('live-badge');
+if (badge && window.EventSource) {
+  const source = new EventSource('/events');
+  source.addEventListener('snapshot', (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      badge.textContent = 'live (SSE)';
+      badge.style.color = '#7fd1c0';
+      const ops = document.getElementById('ops-transitions');
+      if (ops) ops.textContent = data.ops_transitions;
+      const reqs = document.getElementById('req-total');
+      if (reqs) reqs.textContent = data.requests_total;
+    } catch (error) { /* ignore malformed frames */ }
+  });
+  source.onerror = () => {
+    badge.textContent = 'reconnecting\u2026';
+    badge.style.color = '#e0b25c';
+  };
+}
+"""
 
 
 def _json_bytes(payload) -> bytes:
@@ -233,6 +266,10 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(_json_bytes(_health()), "application/json; charset=utf-8")
             elif path == "/metrics":
                 self._send(_json_bytes(_metrics()), "application/json; charset=utf-8")
+            elif path == "/live.js":
+                self._send(LIVE_JS.encode("utf-8"), "application/javascript; charset=utf-8")
+            elif path == "/events":
+                self._serve_events()
             elif path == "/status":
                 mind, ops = data["mind"], data["ops"]
                 self._send(_json_bytes({
@@ -271,7 +308,31 @@ class Handler(BaseHTTPRequestHandler):
             status = 500
             self._send(_json_bytes({"error": repr(error)}), "application/json; charset=utf-8")
         finally:
-            _record(path, status, (time.perf_counter() - started) * 1000)
+            if path != "/events":  # long-lived stream: keep latency metrics clean
+                _record(path, status, (time.perf_counter() - started) * 1000)
+
+    def _serve_events(self) -> None:
+        """Server-Sent Events: push live snapshots every 2s (bounded to ~2min)."""
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        try:
+            ops = OpsPhaseBrain.load(OPS_BRAIN_PATH)
+            metrics = _metrics()
+            snapshot = json.dumps({
+                "ts": int(time.time()),
+                "ops_transitions": ops.n_transitions,
+                "requests_total": metrics["requests_total"],
+            })
+            self.wfile.write(f"event: snapshot\ndata: {snapshot}\n\n".encode("utf-8"))
+            self.wfile.flush()
+            for _ in range(60):  # ~2 minutes per connection, then client reconnects
+                time.sleep(2)
+                self.wfile.write(f": ping {int(time.time())}\n\n".encode("utf-8"))
+                self.wfile.flush()
+        except (BrokenPipeError, ConnectionResetError, OSError):
+            pass  # client disconnected; normal for SSE
 
     def log_message(self, *args) -> None:  # quiet
         return

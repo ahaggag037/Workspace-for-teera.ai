@@ -32,10 +32,46 @@ Empirical probe (2026-09-25, see worklog + RESEARCH_SOURCES):
 - C4 scheduler tick recorded; `ops-learn` stays idempotent ✔
 - C5 pip install works (psutil imported into `/health`) ✔
 
-## Honest limits (what this layer cannot do)
+## Honest limits — phase 10 verdicts (each line measured, not assumed)
 
-- Cannot modify the host platform, the preview proxy, or survive the
-  sandbox revival itself — it re-declares itself instead.
-- Installed packages are session-scoped (snapshot excludes site-packages);
-  `boot.sh install` re-fetches from PyPI (reachable) after revival.
-- No inbound internet: ports are exposed only through the platform proxy.
+Phase 10 re-attacked every limit with probes. Three kinds of "no" emerged:
+
+### 1. BROKEN by engineering (was claimed impossible-ish, now solved)
+- "Packages are session-scoped" → **VENDORED**: `server/vendor/` (psutil,
+  981 KB) is committed to the repo; `mind_api.py` inserts it on sys.path.
+  Gate V1: with ZERO installed psutil, `/health` still serves mem/cpu.
+  Revival is now ZERO-NETWORK for our dependency set.
+- "Dashboard is meta-refresh" → **SSE**: `/events` streams snapshots every
+  2 s; `/live.js` updates ops-transitions + request counters live.
+  Gate V2: stream verified with curl.
+
+### 2. MAPPED (previously unknown, now measured)
+- Network allowlist (empirical): pypi.org + files.pythonhosted.org +
+  github.com + registry.npmjs.org reachable; raw.githubusercontent,
+  cdn.jsdelivr, huggingface, pypi.python.org, debian mirrors BLOCKED.
+  It is a package-manager allowlist, not a blanket block.
+- Port 80 binds fine as root locally (HTTP 200); external routing remains
+  the platform proxy's decision (only platform-mapped ports are exposed).
+- PID1 is systemd but its D-Bus bus is not reachable → unit management
+  unavailable; our watchdog/scheduler pair remains the right supervisor.
+
+### 3. PRINCIPLED NO (not a capability gap — a boundary we respect)
+- Sandbox escape / host modification / allowlist circumvention: the host,
+  the preview proxy, and the platform allowlist are the contract this agent
+  operates under. Probing reachability is research; tunneling around
+  controls would be attacking the platform we run on. The lab's whole
+  thesis is honest systems — integrity here is a designed feature, and
+  this category is closed permanently (recorded in brain/KNOWLEDGE.jsonl,
+  lesson-phase10-boundaries).
+
+## Acceptance checks (phase 10 additions)
+
+- V1 zero-network revival: /health serves vitals from vendored psutil ✔
+- V2 SSE: /events streams; /live.js live-updates without refresh ✔
+- V3 boundary map documented (above) + port-80/systemd probes recorded ✔
+
+## Known practical残留 (non-boundary chores)
+
+- `boot.sh install` remains as a FALLBACK only; vendored deps are primary.
+- pkill guard lesson x2: the [x] trick protects the pkill argument, not the
+  rest of your compound command line. Run kill and start in separate calls.

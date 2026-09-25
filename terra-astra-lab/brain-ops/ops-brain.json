@@ -10,31 +10,31 @@
     "resolve"
   ],
   "marginal": {
-    "create": 29,
+    "create": 31,
     "escalate": 6,
-    "fail": 2,
+    "fail": 3,
     "observe": 13,
     "recover": 4,
-    "resolve": 14
+    "resolve": 16
   },
   "meta": {
     "last_rows_seen": 0,
-    "last_seq_learned": 70,
-    "updates": 3
+    "last_seq_learned": 76,
+    "updates": 6
   },
-  "n_transitions": 68,
+  "n_transitions": 73,
   "pair_counts": {
     "boot|observe": {
       "observe": 1
     },
     "document|create": {
       "create": 5,
-      "resolve": 3
+      "resolve": 4
     },
     "implement|create": {
       "create": 8,
       "escalate": 1,
-      "fail": 2,
+      "fail": 3,
       "recover": 1,
       "resolve": 3
     },
@@ -62,7 +62,7 @@
       "escalate": 1
     },
     "study|observe": {
-      "create": 2,
+      "create": 3,
       "recover": 1,
       "resolve": 1
     },
@@ -81,13 +81,14 @@
     },
     "verify|fail": {
       "observe": 1,
-      "recover": 1
+      "recover": 1,
+      "resolve": 1
     },
     "verify|observe": {
       "escalate": 1
     },
     "verify|resolve": {
-      "create": 2,
+      "create": 3,
       "escalate": 2,
       "observe": 2
     }
@@ -96,10 +97,10 @@
     "create": {
       "create": 15,
       "escalate": 2,
-      "fail": 2,
+      "fail": 3,
       "observe": 1,
       "recover": 1,
-      "resolve": 8
+      "resolve": 9
     },
     "escalate": {
       "create": 4,
@@ -108,10 +109,11 @@
     },
     "fail": {
       "observe": 1,
-      "recover": 1
+      "recover": 1,
+      "resolve": 1
     },
     "observe": {
-      "create": 4,
+      "create": 5,
       "escalate": 1,
       "observe": 7,
       "recover": 2,
@@ -122,7 +124,7 @@
       "resolve": 2
     },
     "resolve": {
-      "create": 4,
+      "create": 5,
       "escalate": 2,
       "observe": 3,
       "resolve": 3
