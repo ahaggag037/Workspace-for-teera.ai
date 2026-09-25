@@ -47,3 +47,14 @@
 {"area": "brain", "corroborated_by": "brain/KNOWLEDGE.jsonl", "detail": "phase5 lesson: real brain required, synthetic no zero-shot transfer", "outcome": "ok", "phase": "persist", "seq": 47, "source": "live-turn", "verb": "lesson"}
 {"area": "docs", "corroborated_by": "git phase5 commit", "detail": "STATE/PROGRESS/ROADMAP/BOOT phase5 sections", "outcome": "ok", "phase": "document", "seq": 48, "source": "live-turn", "verb": "write"}
 {"area": "git", "corroborated_by": "git log", "detail": "phase5 real-trace bridge commit", "outcome": "ok", "phase": "persist", "seq": 49, "source": "live-turn", "verb": "commit"}
+{"area": "git", "corroborated_by": "origin/arena branch", "detail": "push phase5 commit 6291c50", "outcome": "ok", "phase": "persist", "seq": 50, "source": "live-turn", "verb": "push"}
+{"area": "code", "corroborated_by": "git phase6 commit", "detail": "OpsPhaseBrain + interpolation levels + persistence (phase6)", "outcome": "ok", "phase": "implement", "seq": 51, "source": "live-turn", "verb": "write"}
+{"area": "tests", "corroborated_by": "tests/test_phase6_ops_brain.py", "detail": "7 phase-6 tests (levels, persistence, cold-start, v2 gates)", "outcome": "ok", "phase": "implement", "seq": 52, "source": "live-turn", "verb": "write"}
+{"area": "tests", "corroborated_by": "unittest FAIL log", "detail": "over-constrained top-1 assertion in forecast test", "outcome": "fail", "phase": "verify", "seq": 53, "source": "live-turn", "verb": "test_fail"}
+{"area": "tests", "corroborated_by": "git phase6 commit", "detail": "assert forecast == direct brain computation instead of fixed top-1", "outcome": "ok", "phase": "implement", "seq": 54, "source": "live-turn", "verb": "fix"}
+{"area": "tests", "corroborated_by": "unittest OK", "detail": "33/33 green after fix", "outcome": "ok", "phase": "verify", "seq": 55, "source": "live-turn", "verb": "test_pass"}
+{"area": "reports", "corroborated_by": "reports/realtrace-pilot-v2.json", "detail": "worklog-eval v2: R5/R6 PASS, R7 tie, R8 slight loss", "outcome": "ok", "phase": "seal", "seq": 56, "source": "live-turn", "verb": "eval"}
+{"area": "brain", "corroborated_by": "brain/KNOWLEDGE.jsonl", "detail": "lesson 18: calibration beats argmax under distribution shift", "outcome": "ok", "phase": "persist", "seq": 57, "source": "live-turn", "verb": "lesson"}
+{"area": "docs", "corroborated_by": "git phase6 commit", "detail": "STATE/PROGRESS/ROADMAP/BOOT/README phase6", "outcome": "ok", "phase": "document", "seq": 58, "source": "live-turn", "verb": "write"}
+{"area": "git", "corroborated_by": "git log", "detail": "phase6 operational mind commit", "outcome": "ok", "phase": "persist", "seq": 59, "source": "live-turn", "verb": "commit"}
+{"area": "git", "corroborated_by": "origin/arena branch", "detail": "push phase6 to arena branch", "outcome": "ok", "phase": "persist", "seq": 60, "source": "live-turn", "verb": "push"}

@@ -1,0 +1,103 @@
+{
+  "arms": {
+    "freq_prior": {
+      "accuracy": 0.0,
+      "brier": 0.8549306062819575,
+      "ece": 0.3783783783783783,
+      "log_loss": 1.7976999827044708,
+      "n": 20
+    },
+    "markov": {
+      "accuracy": 0.35,
+      "brier": 0.7766744381167501,
+      "ece": 0.1312009803921568,
+      "log_loss": 1.7067716230066146,
+      "n": 20
+    },
+    "phase_markov": {
+      "accuracy": 0.35,
+      "brier": 0.7794283672278823,
+      "ece": 0.13342320261437912,
+      "log_loss": 1.7086960072713768,
+      "n": 20
+    },
+    "real_learned": {
+      "accuracy": 0.35,
+      "brier": 0.8211134539759195,
+      "ece": 0.21576113086875176,
+      "log_loss": 1.83488469300315,
+      "n": 20
+    },
+    "synth_zero_shot": {
+      "accuracy": 0.15,
+      "brier": 0.9218545338440824,
+      "ece": 0.10888695196260575,
+      "log_loss": 2.171866412850149,
+      "n": 20
+    },
+    "uniform": {
+      "accuracy": 0.55,
+      "brier": 0.8571428571428574,
+      "ece": 0.40714285714285725,
+      "log_loss": 1.945910149055313,
+      "n": 20
+    }
+  },
+  "claim_scope": "first real (non-synthetic) trace family at pilot scale; no capability claim; operator usage gated on verdict",
+  "gates": {
+    "R1_min_test": true,
+    "R2_real_acc_gt_freq_legacy": true,
+    "R3_real_ll_lt_freq_legacy": false,
+    "R4_synth_acc_gt_uniform_reported": false,
+    "R5_phase_acc_gt_const": true,
+    "R6_phase_ll_lt_const": true,
+    "R7_phase_acc_ge_markov": true,
+    "R8_phase_ll_le_markov": false
+  },
+  "honesty_notes": [
+    "one session, tens of events; small-n pilot",
+    "sequence time (1.0 spacing): hazard/time-window signals not meaningful here",
+    "freq_prior IS the constant train-majority baseline (Laplace); the uniform arm",
+    "  degenerates to always-create via alphabetical tie-break (known v1 caveat)",
+    "v2 arms/weights frozen before the v2 run; the v1 report stays archived"
+  ],
+  "kill_condition": "on FAIL: Mind not used for operational forecasting; ledger tap continues",
+  "ledger": {
+    "n_events": 50,
+    "n_test": 20,
+    "n_train": 30,
+    "op_histogram_all": {
+      "create": 21,
+      "escalate": 5,
+      "fail": 1,
+      "observe": 13,
+      "recover": 2,
+      "resolve": 8
+    },
+    "path": "/home/user/Workspace-for-teera.ai/terra-astra-lab/telemetry/worklog.jsonl"
+  },
+  "primary_gates": [
+    "R1",
+    "R5",
+    "R6"
+  ],
+  "split": {
+    "rule": "temporal 60/40",
+    "test_ops": {
+      "create": 11,
+      "escalate": 3,
+      "resolve": 6
+    },
+    "train_ops": {
+      "create": 10,
+      "escalate": 2,
+      "fail": 1,
+      "observe": 13,
+      "recover": 2,
+      "resolve": 2
+    }
+  },
+  "status": "PILOT_REAL_TRACE",
+  "verdict": "PASS",
+  "version": 2
+}

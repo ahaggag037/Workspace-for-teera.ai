@@ -12,6 +12,9 @@ You are operating with an external workspace mind. Before any TAEC task:
    (verb/area/phase/detail/outcome/corroborated_by). Never fabricate rows;
    only events that actually happened, with an artifact or ref when possible.
    When enough new rows accumulate, run `python -m taec_lab.cli worklog-eval`.
+   Refresh the operational brain with `ops-learn` after bursts of new
+   rows, and consult `ops-forecast` before starting a new work phase:
+   it is a probabilistic read of the real stream, not an instruction.
 
 Hard rules:
 

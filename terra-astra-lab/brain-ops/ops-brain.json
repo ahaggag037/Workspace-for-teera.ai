@@ -1,0 +1,127 @@
+{
+  "alpha": 1.0,
+  "labels": [
+    "observe",
+    "request",
+    "create",
+    "fail",
+    "recover",
+    "escalate",
+    "resolve"
+  ],
+  "marginal": {
+    "create": 21,
+    "escalate": 5,
+    "fail": 1,
+    "observe": 12,
+    "recover": 2,
+    "resolve": 8
+  },
+  "meta": {
+    "last_rows_seen": 50,
+    "updates": 1
+  },
+  "n_transitions": 49,
+  "pair_counts": {
+    "boot|observe": {
+      "observe": 1
+    },
+    "document|create": {
+      "create": 5,
+      "resolve": 1
+    },
+    "implement|create": {
+      "create": 6,
+      "escalate": 1,
+      "fail": 1,
+      "recover": 1,
+      "resolve": 2
+    },
+    "implement|observe": {
+      "recover": 1
+    },
+    "implement|recover": {
+      "create": 1,
+      "resolve": 1
+    },
+    "persist|create": {
+      "create": 1,
+      "resolve": 1
+    },
+    "persist|resolve": {
+      "create": 1,
+      "resolve": 2
+    },
+    "seal|create": {
+      "escalate": 1
+    },
+    "seal|escalate": {
+      "create": 2,
+      "escalate": 1
+    },
+    "study|observe": {
+      "create": 1,
+      "resolve": 1
+    },
+    "tune|create": {
+      "observe": 1
+    },
+    "tune|escalate": {
+      "observe": 1
+    },
+    "tune|observe": {
+      "create": 2,
+      "observe": 6
+    },
+    "verify|escalate": {
+      "create": 1
+    },
+    "verify|fail": {
+      "observe": 1
+    },
+    "verify|observe": {
+      "escalate": 1
+    },
+    "verify|resolve": {
+      "create": 1,
+      "escalate": 1,
+      "observe": 2
+    }
+  },
+  "type_counts": {
+    "create": {
+      "create": 12,
+      "escalate": 2,
+      "fail": 1,
+      "observe": 1,
+      "recover": 1,
+      "resolve": 4
+    },
+    "escalate": {
+      "create": 3,
+      "escalate": 1,
+      "observe": 1
+    },
+    "fail": {
+      "observe": 1
+    },
+    "observe": {
+      "create": 3,
+      "escalate": 1,
+      "observe": 7,
+      "recover": 1,
+      "resolve": 1
+    },
+    "recover": {
+      "create": 1,
+      "resolve": 1
+    },
+    "resolve": {
+      "create": 2,
+      "escalate": 1,
+      "observe": 2,
+      "resolve": 2
+    }
+  },
+  "version": "ops-brain-v1"
+}

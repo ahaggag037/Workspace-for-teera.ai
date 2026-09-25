@@ -35,6 +35,12 @@ python -m taec_lab.cli heldout-eval --predictions heldout/w.json --report heldou
 python -m taec_lab.cli softseg-eval                          # hard vs softmix vs v2 ablation
 python -m taec_lab.cli heldout-solve --brain-dir brain --segmentation v2 \
     --pack-dir heldout/pack-hard-v2 --predictions heldout/w-v2.json
+
+# Phase 5-6: real work-event tap + operational mind
+python -m taec_lab.cli worklog-record --verb edit --area code --phase implement --detail "..."
+python -m taec_lab.cli worklog-eval                                 # pre-registered gates
+python -m taec_lab.cli ops-learn                                    # absorb ledger into brain-ops/
+python -m taec_lab.cli ops-forecast                                 # next real work event (advisory)
 ```
 
 التقرير الفعلي يكتب إلى:

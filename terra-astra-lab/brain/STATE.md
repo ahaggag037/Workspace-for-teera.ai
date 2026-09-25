@@ -32,5 +32,14 @@
   tie-break (acc 0.4706) — real_learned beats it on log-loss/Brier but not
   accuracy; add a train-majority constant baseline arm in future evals.
 - open: `ECE-vs-uniform is a degenerate comparison (uniform is trivially calibrated at acc≈1/7); read ECE only jointly with accuracy. Typing accuracy still ~0.53: transition-statistic saturation under corruption is the remaining bottleneck — next frontier is corruption-robust typing features and a compositional held-out (novel tokens/regime mixes).`
-- open_real: `accumulate live worklog rows across future turns, then re-run worklog-eval; add train-majority constant baseline; record wall-clock timestamps for hazard signals.`
+- ops_brain (phase 6, 2026-09-25): `LIVE` — persistent phase-conditioned
+  brain at `brain-ops/ops-brain.json` (49 transitions, 17 pair keys, updates=1)
+- realtrace_pilot_v2: `PASS on primary gates R5/R6` — phase_markov acc 0.3500 /
+  ll 1.7087 beats constant train prior acc 0.0000 / ll 1.7977. R7 tie (acc =
+  markov), R8 slight loss (ll 1.7087 vs 1.7068): phase conditioning NOT yet
+  proven at n=50 — arms stay separated. markov/phase_markov are the best
+  calibrated arms by proper scoring; the always-create artifact (uniform,
+  acc 0.5500) wins raw accuracy only via train→test distribution shift
+  (observe-heavy train, create-heavy test)
+- open_real: `accumulate live rows (ops-learn after bursts); re-run worklog-eval when n_test >= 25; add wall-clock timestamps; then decide whether phase_markov replaces markov as the ops-forecast operator; ops-forecast is advisory, never an instruction.`
 - claim_scope: `synthetic protocol + sealed synthetic held-out + PILOT-scale real-trace PASS; no model-weight or consciousness claim`

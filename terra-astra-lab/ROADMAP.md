@@ -33,6 +33,10 @@
    beats freq_prior; zero-shot synthetic transfer FAILED and was recorded).
    Next: accumulate live rows across turns, add train-majority constant
    baseline, record wall-clock time, then re-evaluate.
+   Phase 6 (2026-09-25): persistent operational brain (`brain-ops/`,
+   `ops-learn`/`ops-forecast`) is LIVE and consulted before new work phases;
+   v2 pilot PASS on R5/R6 (constant-baseline caveat fixed); phase value over
+   plain markov still unproven at n=50 — re-decide at n_test >= 25.
 3. Add explicit counterfactual/intervention branches (F4–F5).
 4. Add early-warning regime-shift fixtures (F6).
 5. Add prospective-memory cue/expiry fixtures (F8).

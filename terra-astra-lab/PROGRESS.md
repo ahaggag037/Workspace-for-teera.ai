@@ -1,5 +1,33 @@
 # TAEC Lab Progress
 
+## 2026-09-25 — phase 6: the Mind goes operational (persistent ops brain + live forecasting)
+
+Status: `WARM / OPS_BRAIN_LIVE (brain-ops/, pilot-v2 PASS on R5/R6)`
+
+The real-trace tap became a working operational loop, not just an eval:
+
+- `brain-ops/ops-brain.json`: persistent phase-conditioned transition brain
+  (separate from synthetic `brain/`, per the v1 no-transfer finding).
+  `ops-learn` absorbs the live ledger (49 transitions, 17 pair keys so far);
+  `ops-forecast` reads the ledger tail and emits a typed next-event
+  distribution with frozen interpolation levels (0.5 pair / 0.3 type /
+  0.2 marginal, alpha=1).
+- `worklog-eval` v2 (pre-registered before the run): primary gates R5/R6
+  PASS — phase_markov acc 0.3500 / ll 1.7087 vs constant train prior
+  acc 0.0000 / ll 1.7977 (temporal 30/20 split on 50 real events).
+- Honest negatives, recorded: R7 tie + R8 slight loss → phase conditioning
+  is NOT yet proven better than plain markov at this scale; the
+  always-create artifact (uniform arm, acc 0.5500) tops raw accuracy only
+  because the test segment is create-heavy (distribution shift) — its
+  log-loss (1.9459) is the worst of all learned arms, which is why proper
+  scoring decides here.
+- Ledger integrity: one same-turn correction (seq 45) documented; live rows
+  now carry source=live-turn; a shell-quoting failure while appending rows
+  was caught (nothing was written) and re-done via the Python API.
+- Tests: 33/33 green (7 new phase-6 tests).
+- BOOT protocol extended: ops-learn after bursts, ops-forecast before new
+  work phases — advisory read, never an instruction.
+
 ## 2026-09-25 — phase 5: first REAL-trace task family (worklog tap + pilot PASS with honest caveats)
 
 Status: `WARM / PILOT_REAL_TRACE (worklog.jsonl, pre-registered gates)`

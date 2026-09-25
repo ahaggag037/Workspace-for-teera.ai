@@ -106,9 +106,17 @@ def main() -> int:
     wr.add_argument("--source", default="live-turn")
     wr.add_argument("--ledger", default=None)
 
-    we = subparsers.add_parser("worklog-eval", help="real-trace pilot eval (pre-registered gates R1-R4)")
+    we = subparsers.add_parser("worklog-eval", help="real-trace pilot eval (pre-registered gates R1-R8)")
     we.add_argument("--ledger", default=None)
     we.add_argument("--report-dir", default="reports")
+
+    ol = subparsers.add_parser("ops-learn", help="absorb the live ledger into the persistent ops brain")
+    ol.add_argument("--ledger", default=None)
+    ol.add_argument("--brain", default=None)
+
+    of = subparsers.add_parser("ops-forecast", help="forecast the NEXT real work event")
+    of.add_argument("--ledger", default=None)
+    of.add_argument("--brain", default=None)
 
     recall = subparsers.add_parser("recall", help="retrieve knowledge items")
     recall.add_argument("query")
@@ -238,6 +246,20 @@ def main() -> int:
         ledger = Path(args.ledger) if args.ledger else DEFAULT_LEDGER
         report = run_realtrace_eval(ledger_path=ledger, report_dir=Path(args.report_dir))
         print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "ops-learn":
+        from .realtrace import DEFAULT_LEDGER, OPS_BRAIN_PATH, learn_ops_brain
+
+        ledger = Path(args.ledger) if args.ledger else DEFAULT_LEDGER
+        brain = Path(args.brain) if args.brain else OPS_BRAIN_PATH
+        print(json.dumps(learn_ops_brain(ledger_path=ledger, brain_path=brain), indent=2, sort_keys=True))
+        return 0
+    if args.command == "ops-forecast":
+        from .realtrace import DEFAULT_LEDGER, OPS_BRAIN_PATH, forecast_next_ops
+
+        ledger = Path(args.ledger) if args.ledger else DEFAULT_LEDGER
+        brain = Path(args.brain) if args.brain else OPS_BRAIN_PATH
+        print(json.dumps(forecast_next_ops(ledger_path=ledger, brain_path=brain), indent=2, sort_keys=True))
         return 0
         mind = TAECMind(brain_dir=args.brain_dir)
         hits = mind.bank.search(args.query, top_k=args.top_k)
