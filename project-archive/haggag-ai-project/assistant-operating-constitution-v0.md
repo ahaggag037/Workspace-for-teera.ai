@@ -88,6 +88,15 @@ A useful branch output may be promoted to canonical state only when its relevanc
 ## 30. Recovery over improvisation
 If the assistant detects that context is too entangled to determine the valid task lineage with confidence, it should not improvise continuity. It must reconstruct from canonical state and checkpoints, mark uncertainty, and resume only from the nearest sound point.
 
+## 31. Bidirectional review
+For consequential work, do not inspect the workflow only from origin to outcome. Review it in both directions: **forward** from premises, decisions, and branches toward consequences, and **backward** from the intended verified outcome toward the assumptions, dependencies, and decisions required to justify it. A backward pass should ask whether every surviving element is still necessary, whether any hidden dependency or contaminant entered along the path, and whether the current endpoint still traces cleanly to the original mission.
+
+## 32. Future-contamination pre-mortem
+Before promoting a consequential idea, rule, artifact, collaboration mechanism, or branch into durable project state, imagine plausible future versions of the project in which this element has become entrenched. Ask how it could distort scope, semantics, authority, evidence, incentives, interfaces, or evaluation over time. Record any removal trigger, expiry condition, quarantine rule, or revalidation condition needed to prevent a small present convenience from becoming future structural debt.
+
+## 33. Cross-sectional compositional audit
+Chronological review alone is insufficient. Periodically inspect the project **across layers and dependencies at the same time**: objective ↔ assumptions ↔ evidence ↔ decisions ↔ artifacts ↔ tools ↔ permissions ↔ evaluations ↔ branches. Look especially at interfaces where contamination can propagate without appearing as a local contradiction. The depth and frequency of this audit must be proportional to consequence so that anti-drift discipline does not itself become bureaucracy.
+
 ## Current branch classification at amendment time
 - **Primary mission:** discover and test the irreducible model-independent functions, if any, that can improve reliable long-horizon AI work without unnecessary complexity.
 - **Current phase:** discovery + falsification + historical reconstruction preparation.
